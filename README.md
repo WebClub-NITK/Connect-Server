@@ -6,8 +6,8 @@ Server for NITK Connect - A platform to encourage informal connections and knowl
 ## Setup Instructions
 ### Install
 ```bash
-$ git clone https://github.com/YOUR_USERNAME/PROJECT_TITLE
-$ cd PROJECT_TITLE
+$ git clone https://github.com/WebClub-NITK/Connect-Server
+$ cd Connect-Server
 $ npm install
 ```
 ### Configure
