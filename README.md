@@ -15,7 +15,21 @@ Create a .env file in the root with following contents.
 ```
 PORT=(3001)
 MONGODB_URI=(mongo db instance url)
+USER='<mysql_username>'
+PASSWORD'<mysql_userpassword'>
+DATABASE='Connect'
 ```
+### MySQL Configure
+Install MySQL then enter the MYSQL console by  ```sudo mysql``` <br/>
+Run the following commands
+
+```
+CREATE USER '<your_username>'@'localhost' IDENTIFIED BY '<password_of_the_user>';
+GRANT ALL PRIVILEGES ON * . * TO '<your_username>'@'localhost';
+ALTER USER '<your_username>'@'localhost' IDENTIFIED WITH mysql_native_password BY '<password_of_the_user>';
+FLUSH PRIVILEGES;
+```
+Enter MySQL console of your user by ```mysql -u <username> -p``` and create a database named Connect
 
 ### Run
 To start the server: `npm start`  
