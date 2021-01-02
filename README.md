@@ -29,6 +29,7 @@ GRANT ALL PRIVILEGES ON * . * TO '<your_username>'@'localhost';
 ALTER USER '<your_username>'@'localhost' IDENTIFIED WITH mysql_native_password BY '<password_of_the_user>';
 FLUSH PRIVILEGES;
 ```
+Enter MySQL console of your user by ```mysql -u <username> -p``` and create a database named Connect
 
 ### Run
 To start the server: `npm start`  
