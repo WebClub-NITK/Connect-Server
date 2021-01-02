@@ -1,13 +1,12 @@
 const {PASSWORD, USER, DATABASE} = require('../utils/config')
 const mysql = require('mysql')
 
-configs = {
+const connection = mysql.createConnection({
     host: 'localhost',
     user: USER,
     password: PASSWORD,
     database: DATABASE
-}
-const connection = mysql.createConnection(configs)
+})
 
 const Executequery = (q,callback) => {
     let ans = null
