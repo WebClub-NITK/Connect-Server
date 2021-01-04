@@ -4,7 +4,7 @@ const { getAllBlogs, insertBlog } = require('../services/blogServices')
 
 blogsRouter.get('/', async(request, response) => {
 	try{
-		const blogs = getAllBlogs()
+		const blogs = await getAllBlogs()
 		response.json(blogs)
 	} catch(err) {
 		console.log(err)

@@ -15,7 +15,10 @@ const blogs = [
 	},
 ]
 
-const getAllBlogs = () => blogs
+const getAllBlogs = async () => {
+	const blogs = await Blog.find({})
+	return blogs
+}
 
 const insertBlog = async (body) => {
 	const blog = new Blog({
