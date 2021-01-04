@@ -15,12 +15,16 @@ const blogs = [
 	},
 ]
 
-const getAllBlogs = () => blogs
+const getAllBlogs = async () => {
+	const blogs = await Blog.find({})
+	return blogs
+}
 
 const insertBlog = async (body) => {
 	const blog = new Blog({
 		title: body.title,
-		body: body.body,
+		body: JSON.stringify(body.body),
+		tags: body.tags
 	})
 	return blog.save()
 }

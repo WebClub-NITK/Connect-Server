@@ -11,6 +11,9 @@ const blogSchema = new mongoose.Schema({
 		required: true,
 		minlength: 10
 	},
+	tags: [{
+		type: String
+	}]
 }, { timestamps: true })
 
 module.exports = mongoose.model('Blog', blogSchema)
