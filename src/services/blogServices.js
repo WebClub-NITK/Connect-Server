@@ -23,7 +23,8 @@ const getAllBlogs = async () => {
 const insertBlog = async (body) => {
 	const blog = new Blog({
 		title: body.title,
-		body: body.body,
+		body: JSON.stringify(body.body),
+		tags: body.tags
 	})
 	return blog.save()
 }
