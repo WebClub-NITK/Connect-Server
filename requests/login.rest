@@ -1,0 +1,11 @@
+POST http://localhost:3001/connect/login
+Content-Type: application/json
+
+{
+    "password": "nnn",
+    "username": "naman"
+}
+
+###
+GET http://localhost:3001/connect/dummy
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjgsImlhdCI6MTYwOTgyOTA3N30.r9jG2VCOnqKWua_F_m1CTczLXPxWA-l0qHIdGtnMPBU
