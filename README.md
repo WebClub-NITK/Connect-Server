@@ -18,6 +18,7 @@ MONGODB_URI=(mongo db instance url)
 USER='<mysql_username>'
 PASSWORD'<mysql_userpassword'>
 DATABASE='Connect'
+ACCESS_TOKEN_SECRET='<64 byte random string>'
 ```
 ### MySQL Configure
 Install MySQL then enter the MYSQL console by  ```sudo mysql``` <br/>
