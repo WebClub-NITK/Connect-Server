@@ -42,4 +42,21 @@ blogsRouter.get('/:id', async(request, response) => {
 	}
 })
 
+blogsRouter.get('/title/:title', async(request, response) => {
+
+	try{
+		const title = request.params.title
+		const blogs = await Blog.find({title:title})
+
+   if(blogs){
+		 response.status(201).json(blogs)
+	 }else{
+		 response.status(404).json(blogs)
+	 }
+}catch(err){
+		console.log(err)
+		response.status(501).send()
+	}
+})
+
 module.exports = blogsRouter
