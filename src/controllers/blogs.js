@@ -51,10 +51,27 @@ blogsRouter.get('/title/:title', async(request, response) => {
    if(blogs){
 		 response.status(201).json(blogs)
 	 }else{
-		 response.status(404).json(blogs)
+		 response.status(404).send()
 	 }
 }catch(err){
 		console.log(err)
+		response.status(501).send()
+	}
+})
+
+blogsRouter.get('/tag/:tag', async(request, response) => {
+	try{
+		const tag = request.params.tag;
+    const blogs = await Blog.find({tags:tag})
+
+   if(blogs){
+		 response.status(201).json(blogs)
+	 }else{
+		 response.status(404).send()
+	 }
+
+ 	}catch(err){
+		console.log(err);
 		response.status(501).send()
 	}
 })
