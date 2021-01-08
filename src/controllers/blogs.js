@@ -46,7 +46,7 @@ blogsRouter.get('/title/:title', async(request, response) => {
 
 	try{
 		const title = request.params.title
-		const blogs = await Blog.find({title:title})
+		const blogs = await Blog.find({title:{$regex: `.*${title}.*`, $options: "i"}})
 
    if(blogs){
 		 response.status(201).json(blogs)
@@ -62,7 +62,7 @@ blogsRouter.get('/title/:title', async(request, response) => {
 blogsRouter.get('/tag/:tag', async(request, response) => {
 	try{
 		const tag = request.params.tag;
-    const blogs = await Blog.find({tags:tag})
+    const blogs = await Blog.find({tags:{$regex: `.*${tag}.*`, $options:"i"}})
 
    if(blogs){
 		 response.status(201).json(blogs)
