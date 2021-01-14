@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 var multer  = require('multer')
 const path = require('path')
+const fs = require('fs')
 
 const { getAllBlogs, insertBlog } = require('../services/blogServices')
 const Blog = require('../models/blog')
@@ -83,7 +84,8 @@ blogsRouter.post('/file_image_upload', upload.single('image'), async(request, re
 		const res = {
 			success: 1,
 			file: {
-				url: `http://localhost:3001/blog_images/${request.file.filename}`
+				url: `http://localhost:3001/blog_images/${request.file.filename}`,
+				from_server: true
 			}
 		}
 		response.json(res)
@@ -102,6 +104,20 @@ blogsRouter.post('/url_image_upload', async(request, response) => {
 			}
 		}
 		response.json(res)
+	}catch(err){
+		console.log(err)
+		response.status(501).send()
+	}
+})
+
+blogsRouter.post('/remove_images', async(request, response) => {
+	try{
+		for (const imageurl of request.body.images){
+			const image = imageurl.substring(imageurl.lastIndexOf("/") + 1)
+			let path = `./blog_images/${image}`
+			fs.unlink(path, (err) => err && console.log(err))
+		}
+		response.status(201).send()
 	}catch(err){
 		console.log(err)
 		response.status(501).send()
