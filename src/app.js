@@ -14,6 +14,8 @@ require('./database/mongodb')
 app.use(cors())
 // exposing public directory
 app.use('/static', express.static(path.join(__dirname, '../public')))
+// exposing the blog_images directory
+app.use('/blog_images', express.static(path.join(__dirname, '../blog_images')))
 // parse json in requests
 app.use(express.json())
 // logs incoming requests
