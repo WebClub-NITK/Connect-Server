@@ -1,7 +1,26 @@
 const blogsRouter = require('express').Router()
+var multer  = require('multer')
+const path = require('path')
 
 const { getAllBlogs, insertBlog } = require('../services/blogServices')
 const Blog = require('../models/blog')
+
+const storage = multer.diskStorage({
+    destination: './blog_images',
+    filename: function(req, file, cb) {
+        cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const imageFilter = function(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
+        req.fileValidationError = 'Only image files are allowed!';
+        return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+};
+
+var upload = multer({ storage: storage, fileFilter: imageFilter})
 
 blogsRouter.get('/', async(request, response) => {
 	try{
@@ -38,6 +57,53 @@ blogsRouter.get('/:id', async(request, response) => {
 		}
 	}catch(error) {
 		console.log(error)
+		response.status(501).send()
+	}
+})
+
+blogsRouter.get('/tag/:tag', async(request, response) => {
+	try{
+		const tag = request.params.tag;
+    const blogs = await Blog.find({tags:{$regex: `.*${tag}.*`, $options:"i"}})
+
+   if(blogs){
+		 response.status(201).json(blogs)
+	 }else{
+		 response.status(404).send()
+	 }
+
+ 	}catch(err){
+		console.log(err);
+		response.status(501).send()
+	}
+})
+
+blogsRouter.post('/file_image_upload', upload.single('image'), async(request, response) => {
+	try{
+		const res = {
+			success: 1,
+			file: {
+				url: `http://localhost:3001/blog_images/${request.file.filename}`
+			}
+		}
+		response.json(res)
+	}catch(err){
+		console.log(err)
+		response.status(501).send()
+	}
+})
+
+blogsRouter.post('/url_image_upload', async(request, response) => {
+	try{
+		const res = {
+			success: 1,
+			file: {
+				url: request.body.url
+			}
+		}
+		response.json(res)
+	}catch(err){
+		console.log(err)
 		response.status(501).send()
 	}
 })
