@@ -46,6 +46,22 @@ blogsRouter.post('/', async(request, response) => {
 	}
 })
 
+blogsRouter.get('/search', async(request,response) => {
+try{
+	const title = request.query.title
+	const blogs = await Blog.find({title:{$regex: `.*${title}.*`, $options: "i"}})
+
+ if(blogs){
+	 response.status(201).json(blogs)
+ }else{
+	 response.status(404).send()
+ }
+}catch(err){
+	console.log(error)
+	response.status(501).send()
+}
+})
+
 blogsRouter.get('/:id', async(request, response) => {
 	try{
 		const id = request.params.id
