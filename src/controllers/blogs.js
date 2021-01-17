@@ -3,7 +3,7 @@ var multer  = require('multer')
 const path = require('path')
 const fs = require('fs')
 
-const { getAllBlogs, insertBlog } = require('../services/blogServices')
+const { getAllBlogs, insertBlog, updateBlog } = require('../services/blogServices')
 const Blog = require('../models/blog')
 
 const storage = multer.diskStorage({
@@ -42,6 +42,20 @@ blogsRouter.post('/', async(request, response) => {
 		const savedBlog = await insertBlog(body)
 
 		response.status(200).json(savedBlog)
+	} catch(error) {
+		console.log(error.message)
+		response.status(400).json({ error: error.message })
+	}
+})
+
+blogsRouter.put('/:id', async(request, response) => {
+	try{
+		const id = request.params.id
+		const body = request.body
+
+		const updatedBlog = await updateBlog(id, body)
+
+		response.status(200).json(updatedBlog)
 	} catch(error) {
 		console.log(error.message)
 		response.status(400).json({ error: error.message })
@@ -131,8 +145,9 @@ blogsRouter.post('/url_image_upload', async(request, response) => {
 blogsRouter.post('/remove_images', async(request, response) => {
 	try{
 		for (const imageurl of request.body.images){
-			const image = imageurl.substring(imageurl.lastIndexOf("/") + 1)
-			let path = `./blog_images/${image}`
+			if (!imageurl) continue
+			const imagename = imageurl.substring(imageurl.lastIndexOf("/") + 1)
+			let path = `./blog_images/${imagename}`
 			fs.unlink(path, (err) => err && console.log(err))
 		}
 		response.status(201).send()
