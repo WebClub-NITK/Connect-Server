@@ -24,7 +24,8 @@ const insertBlog = async (body) => {
 	const blog = new Blog({
 		title: body.title,
 		body: JSON.stringify(body.body),
-		tags: body.tags
+		tags: body.tags,
+		coverImageUrl: body.coverImageUrl
 	})
 	return blog.save()
 }

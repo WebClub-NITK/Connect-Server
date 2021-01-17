@@ -9,7 +9,9 @@ const Blog = require('../models/blog')
 const storage = multer.diskStorage({
     destination: './blog_images',
     filename: function(req, file, cb) {
-        cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
+		// store image as filename_date.extension
+		const filename = path.parse(file.originalname).name.replace(/[^a-z0-9]/gi, '_')
+        cb(null, filename + '_' + Date.now() + path.extname(file.originalname));
     }
 });
 
