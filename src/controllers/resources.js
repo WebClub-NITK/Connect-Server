@@ -1,14 +1,25 @@
 const resourcesRouter = require('express').Router()
 require('../models/resource-module/branch')
 require('../models/resource-module/course')
+require('../models/resource-module/resource')
+const { Router } = require('express')
 const mongoose = require('mongoose')
+const router = require('./docs')
+const deleteFile = require('../utils/deleteFile')
 const {ObjectId} = mongoose.Types.ObjectId;
-
+const upload = require('../utils/fileStore')
 const Branch = mongoose.model("Branch")
 const Course = mongoose.model("Course")
-
+const Resource= mongoose.model("Resource")
+const docRouter = require('./docs')
 resourcesRouter.get('/resources', (request, response) => {
-    response.send('get all resources')
+
+    Resource.find().then(resources=>{
+        response.json({resources:resources});
+    })
+    .catch(err=>{
+        console.log(err);
+    })
 })
 
 resourcesRouter.get('/branches', (request, response) => {
@@ -85,7 +96,47 @@ resourcesRouter.get('/courses/:branch_id', (request, response) => {
 })
 
 resourcesRouter.get('/resources/:course_id', (request, response) => {
-    response.send('get resources of course '+request.params.course_id)
+    Resource.find({course:ObjectId(request.params.course_id)}).then(resources=>{
+        response.json({resources:resources})
+    }).catch(err=>{
+        console.log(err)
+    })
 })
 
+resourcesRouter.post('/resources/:course_id', upload.array('file'),async (req,res)=>{
+    let tags = req.body.tags.split(' ')
+    tags.forEach(t => {
+        t=t.toUpperCase()
+    });
+    let newResource = new Resource({
+        title: req.body.title,
+        description: req.body.description,
+        tags:tags,
+        course: ObjectId(req.params.course_id)
+    });
+    
+    req.files.forEach(file=>{
+        newResource.files.push(file.id);
+    })
+    
+    newResource.save().then(r=>{
+        console.log(r);
+        res.json({message:"Resource added successfully"});
+    }).catch(err=>{
+        console.log(err);
+    })
+
+})
+
+resourcesRouter.delete('/resource/:resource_id',async (req,res)=>{
+    const resource = await Resource.findByIdAndDelete(req.params.resource_id)
+    let files = resource.files
+    files.forEach(async f=>{
+        await deleteFile(f)
+
+    })
+    res.send("Resource successfully deleted");
+
+});
+resourcesRouter.get('/docs/:id',docRouter)
 module.exports = resourcesRouter
