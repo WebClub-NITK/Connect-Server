@@ -6,6 +6,9 @@ const blogSchema = new mongoose.Schema({
 		required: true,
 		minlength: 6,
 	},
+	coverImageUrl: {
+		type: String,
+	},
 	body: {
 		type: String,
 		required: true,
