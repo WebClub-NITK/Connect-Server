@@ -1,0 +1,4 @@
+POST http://localhost:3001/connect/signup
+Content-Type: application/json
+
+{"name": "Sushanth",  "passwordUser": "Sushanth", "passwordAnnoUser": "AnnoUser", "username": "sushanth", "annoUser": "annouser", "ProgrammeType": "1", "branch": "1", "semester": "4", "email": "email@email.com"}
