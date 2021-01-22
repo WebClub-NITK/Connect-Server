@@ -101,7 +101,7 @@ const search = async(body) => {
                 attributes: ['Id']
             }]
         });
-        userIds = userIds.map((profile) => profile.Users.map((u) => u.Id)).flat();
+        userIds = userIds.map((profile) => profile.Users.map((u) => u.Id));
         const users = await User.findAll({
             where: {
                 [Op.or]: [
@@ -121,7 +121,7 @@ const search = async(body) => {
                 model: Profile,
                 attributes: { exclude: ['createdAt', 'updatedAt'] }
             }],
-            attributes: { exclude: ['Password', 'crreatedAt', 'updatedAt'] }
+            attributes: { exclude: ['Password', 'createdAt', 'updatedAt'] }
         });
         return users;
     }

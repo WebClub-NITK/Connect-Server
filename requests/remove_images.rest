@@ -1,0 +1,8 @@
+POST http://localhost:3001/blogs/remove_images
+Content-Type: application/json
+
+{
+    "images" : [null, "url/sample.txt"]
+}
+
+

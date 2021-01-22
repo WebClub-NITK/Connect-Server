@@ -15,8 +15,8 @@ Create a .env file in the root with following contents.
 ```
 PORT=(3001)
 MONGODB_URI=(mongo db instance url)
-USER='<mysql_username>'
-PASSWORD'<mysql_userpassword'>
+DB_USER='<mysql_username>'
+DB_PASSWORD'<mysql_userpassword'>
 DATABASE='Connect'
 ACCESS_TOKEN_SECRET='<64 byte random string>'
 ```
@@ -31,7 +31,6 @@ ALTER USER '<your_username>'@'localhost' IDENTIFIED WITH mysql_native_password B
 FLUSH PRIVILEGES;
 ```
 Enter MySQL console of your user by ```mysql -u <username> -p``` and create a database named Connect
-
 ### Run
 To start the server: `npm start`  
 To run in development environment: `npm run dev`
