@@ -127,9 +127,21 @@ const search = async(body) => {
     }
 }
 
+const leaderboard = async () => {
+    const users = await User.findAll({
+        order: [
+            ["respect", "DESC"]
+        ],
+        limit: 10,
+        attributes: ['Id', 'Username', 'Respect']
+    });
+    return users;
+}
+
 module.exports = {
     AddUser,
     AuthUser,
     RetreiveInfo,
-    search
+    search,
+    leaderboard
 }

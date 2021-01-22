@@ -1,5 +1,5 @@
 const connectRouter = require('express').Router()
-const { AddUser,AuthUser, RetreiveInfo, search } = require('../services/connectServices')
+const { AddUser,AuthUser, RetreiveInfo, search, leaderboard } = require('../services/connectServices')
 const  { authenticateToken } = require('../utils/middleware')
 const jwt = require('jsonwebtoken');
 const { ACCESS_TOKEN_SECRET } = require('../utils/config'); 
@@ -41,5 +41,10 @@ connectRouter.get('/search', async(req, res) => {
 	const response = await search(req.query);
 	return res.status(200).json(response);
 });
+
+connectRouter.get('/leaderboard', async(req, res) => {
+	const users = await leaderboard();
+	return res.status(200).json(users);
+})
 
 module.exports = connectRouter
