@@ -32,7 +32,7 @@ const AddUser = (body) => {
             Username: annoUser,
             Password: passwordAnnoUser,
         });
-        return user;
+        return [user,annoUserObj];
     })();
     return u;
 }

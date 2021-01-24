@@ -11,8 +11,10 @@ connectRouter.post('/signup', async(request, response) => {
 		if (!user) {
 			return response.status(403).send();
 		}
-		const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
-        response.status(200).json({accessToken: accessToken, userId: user.Id});
+		console.log(user[0].Id,user[1].Id)
+		const accessToken = jwt.sign({userId: user[0].Id}, ACCESS_TOKEN_SECRET.toString());
+		const secondaryToken = jwt.sign({userId: user[1].Id}, ACCESS_TOKEN_SECRET.toString());
+        response.status(200).json({accessToken: accessToken, userId: user[0].Id, secondaryToken: secondaryToken});
 	} catch(err) {
 		console.log(err)
 		response.status(500).send('Something went wrong')
@@ -29,9 +31,14 @@ connectRouter.post('/login', async(request,response) => {
 	}
 })
 
-connectRouter.get('/dummy', authenticateToken,  async(_, res) => {
+connectRouter.get('/dummy', authenticateToken,  async(req, res) => {
+	console.log(req.userId)
 	return res.status(200).send();
 });
+/* Requesting by passing headers(React)
+	let token = localStorage.getItem('accessToken').toString();
+	await axios.get(baseUrl + "/dummy", {headers: {Authorization: `Bearer ${token}`}})
+*/
 
 connectRouter.get('/info', async(_, res) => {
 	return res.status(200).send(await RetreiveInfo());
