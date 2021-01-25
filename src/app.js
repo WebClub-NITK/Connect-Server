@@ -7,6 +7,7 @@ const cors = require('cors')
 // function imports
 const { requestLogger, unknownEndpoint } = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
+const connectRouter = require('./controllers/connect')
 const resourcesRouter = require('./controllers/resources')
 require('./database/mongodb')
 
@@ -23,6 +24,9 @@ app.use(requestLogger)
 
 // blogs route handler
 app.use('/blogs', blogsRouter)
+
+// connect route handler
+app.use('/connect', connectRouter)
 
 // resources route handler
 app.use('/resource_module', resourcesRouter)
