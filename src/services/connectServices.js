@@ -127,9 +127,15 @@ const search = async(body) => {
     }
 }
 
+const Updaterespect = async(req,res) => {
+    await User.update({ Respect: Sequelize.literal(`Respect + ${req.body.amount}`)},{ where: {Id: req.body.userId}})
+    res.status(200).send()
+}
+
 module.exports = {
     AddUser,
     AuthUser,
     RetreiveInfo,
-    search
+    search,
+    Updaterespect
 }
