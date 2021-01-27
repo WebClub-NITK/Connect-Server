@@ -127,6 +127,16 @@ const search = async(body) => {
     }
 }
 
+const leaderboard = async () => {
+    const users = await User.findAll({
+        order: [
+            ["respect", "DESC"]
+        ],
+        limit: 10,
+        attributes: ['Id', 'Username', 'Respect']
+    });
+    return users;
+}
 const Updaterespect = async(req,res) => {
     await User.update({ Respect: Sequelize.literal(`Respect + ${req.body.amount}`)},{ where: {Id: req.body.userId}})
     res.status(200).send()
@@ -137,5 +147,6 @@ module.exports = {
     AuthUser,
     RetreiveInfo,
     search,
+    leaderboard,
     Updaterespect
 }
