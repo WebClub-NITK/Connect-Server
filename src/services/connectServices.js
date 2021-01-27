@@ -9,15 +9,10 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 const AddUser = (body) => {
-    let { passwordUser, passwordAnnoUser, username, annoUser, name, ProgrammeType, branch, semester, email } = body;
+    let { passwordUser, username, email } = body;
     let u;
     u = (async () => {
-        console.log(branch, parseInt(branch));
         const profile = await Profile.create({
-            Name: name,
-            ProgrammeType: parseInt(ProgrammeType),
-            Department: parseInt(branch),
-            Semester: parseInt(semester),
             Email: email
         });
         if (!u) return;
@@ -27,14 +22,29 @@ const AddUser = (body) => {
             Password: passwordUser,
             ProfileId: profile.Id
         });
-        passwordAnnoUser = await bcrypt.hash(passwordAnnoUser, 10);
-        const annoUserObj = await User.create({
-            Username: annoUser,
-            Password: passwordAnnoUser,
-        });
-        return [user,annoUserObj];
+        return user;
     })();
     return u;
+}
+
+const AddAnnoUser = (body) => {
+    let { email, username, passwordUser } = body;
+    let u;
+    u = (async () => {
+        const profile = await Profile.findOne({
+            where: {
+                Email: email
+            }
+        });
+        if (profile.AnnouserSet) return;
+        passwordUser = await bcrypt.hash(passwordUser, 10);
+        const user = await User.create({
+            Username: username,
+            Password: passwordUser
+        });
+        return user;
+    })();
+    return u;    
 }
 
 const AuthUser = (body, response) => {
@@ -142,11 +152,32 @@ const Updaterespect = async(req,res) => {
     res.status(200).send()
 }
 
+const updateProfile = async(req, res) => {
+    let { profileId, email, name, ptype, branch, semester } = req.body;
+    await Profile.update(
+        {
+            Name: name,
+            ProgrammeType: parseInt(ptype.toString()),
+            Department: parseInt(branch.toString()),
+            Semester: parseInt(semester.toString()) 
+        },
+        {
+            where: {
+                Id: parseInt(profileId),
+                Email: email
+            }
+        }
+    );
+    res.status(200).send();
+}
+
 module.exports = {
     AddUser,
     AuthUser,
     RetreiveInfo,
     search,
     leaderboard,
-    Updaterespect
+    Updaterespect,
+    updateProfile,
+    AddAnnoUser
 }

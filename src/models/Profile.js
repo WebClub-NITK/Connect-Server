@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         Semester: {
             type: DataTypes.INTEGER
+        },
+        AnnouserSet: {
+            type: DataTypes.BOOLEAN,
+            default: false
         }
     });
     return Profile;
