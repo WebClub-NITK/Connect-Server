@@ -1,0 +1,4 @@
+POST http://localhost:3001/connect/updaterespect
+Content-Type: application/json
+
+{"amount": "5" , "userId": "11"}

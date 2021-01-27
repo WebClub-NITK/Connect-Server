@@ -32,7 +32,7 @@ const AddUser = (body) => {
             Username: annoUser,
             Password: passwordAnnoUser,
         });
-        return user;
+        return [user,annoUserObj];
     })();
     return u;
 }
@@ -137,11 +137,16 @@ const leaderboard = async () => {
     });
     return users;
 }
+const Updaterespect = async(req,res) => {
+    await User.update({ Respect: Sequelize.literal(`Respect + ${req.body.amount}`)},{ where: {Id: req.body.userId}})
+    res.status(200).send()
+}
 
 module.exports = {
     AddUser,
     AuthUser,
     RetreiveInfo,
     search,
-    leaderboard
+    leaderboard,
+    Updaterespect
 }
