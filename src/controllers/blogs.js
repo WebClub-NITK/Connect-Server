@@ -5,6 +5,8 @@ const fs = require("fs");
 
 const {
   getAllBlogs,
+  getSearchBlogs,
+  getBlogsByTags,
   insertBlog,
   updateBlog,
 } = require("../services/blogServices");
@@ -31,10 +33,13 @@ const imageFilter = function (req, file, cb) {
 
 var upload = multer({ storage: storage, fileFilter: imageFilter });
 
-blogsRouter.get("/", async (request, response) => {
+blogsRouter.get("/page/:pageNumber", async (request, response) => {
+  const pageNumber = request.params.pageNumber;
+  const numberOfPosts = (pageNumber-1)*10;
+  const count = await Blog.countDocuments({});
   try {
-    const blogs = await getAllBlogs();
-    response.json(blogs);
+    const blogs = await getAllBlogs(numberOfPosts);
+    response.json({blogs:blogs,count:count});
   } catch (err) {
     console.log(err);
     response.status(500).send("Something went wrong");
@@ -69,14 +74,10 @@ blogsRouter.put("/:id", async (request, response) => {
 });
 
 blogsRouter.get("/search", async (request, response) => {
+
   try {
-    const title = request.query.title.trim();
-    const blogs = await Blog.find({
-      $or: [
-        { body: { $regex: `.*${title}.*`, $options: "i" } },
-        { title: { $regex: `.*${title}.*`, $options: "i" } },
-      ],
-    });
+    const title = (request.query.q).trim();
+    const blogs = await getSearchBlogs(title);
 
     if (blogs) {
       response.status(201).json(blogs);
@@ -108,9 +109,7 @@ blogsRouter.get("/:id", async (request, response) => {
 blogsRouter.get("/tag/:tag", async (request, response) => {
   try {
     const tag = request.params.tag;
-    const blogs = await Blog.find({
-      tags: { $regex: `.*${tag}.*`, $options: "i" },
-    });
+    const blogs = await getBlogsByTags(tag);
 
     if (blogs) {
       response.status(201).json(blogs);
