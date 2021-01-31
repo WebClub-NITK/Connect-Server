@@ -1,6 +1,6 @@
 const connectRouter = require('express').Router()
-const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard } = require('../services/connectServices')
-const  { authenticateToken } = require('../utils/middleware')
+const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard, updateProfile, AddAnnoUser } = require('../services/connectServices');
+const  { authenticateToken } = require('../utils/middleware');
 const jwt = require('jsonwebtoken');
 const { ACCESS_TOKEN_SECRET } = require('../utils/config'); 
 
@@ -11,10 +11,8 @@ connectRouter.post('/signup', async(request, response) => {
 		if (!user) {
 			return response.status(403).send();
 		}
-		console.log(user[0].Id,user[1].Id)
-		const accessToken = jwt.sign({userId: user[0].Id}, ACCESS_TOKEN_SECRET.toString());
-		const secondaryToken = jwt.sign({userId: user[1].Id}, ACCESS_TOKEN_SECRET.toString());
-        response.status(200).json({accessToken: accessToken, userId: user[0].Id, secondaryToken: secondaryToken, annouserId: user[1].Id});
+		const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
+        response.status(200).json({accessToken: accessToken, userId: user.Id});
 	} catch(err) {
 		console.log(err)
 		response.status(500).send('Something went wrong')
@@ -49,12 +47,29 @@ connectRouter.get('/search', async(req, res) => {
 	return res.status(200).json(response);
 });
 
-connectRouter.get('/leaderboard', async(req, res) => {
+connectRouter.get('/leaderboard', async(_, res) => {
 	const users = await leaderboard();
 	return res.status(200).json(users);
 });
-connectRouter.post('/updaterespect', async(req,res) => {
-	Updaterespect(req,res)
+connectRouter.post('/updaterespect', async(req, res) => {
+	Updaterespect(req,res);
+});
+connectRouter.post('/updateProfile', authenticateToken, async(req, res) => {
+	updateProfile(req, res);
+});
+connectRouter.post('/createAnnoUser', async(request, response) => {
+	try{
+        let body = request.body;
+		const user = await AddAnnoUser(body);
+		if (!user) {
+			return response.status(403).send();
+		}
+		const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
+        response.status(200).json({accessToken: accessToken, userId: user.Id});
+	} catch(err) {
+		console.log(err)
+		response.status(500).send('Something went wrong')
+	}
 });
 
 module.exports = connectRouter
