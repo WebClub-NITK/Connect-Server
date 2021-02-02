@@ -77,7 +77,7 @@ const RetreiveInfo = async() => {
 const search = async(body) => {
     if (body.id) {
         const userId = parseInt(body.id);
-        const user = await User.findOne({
+        let user = await User.findOne({
             where: {
                 Id: userId
             },
@@ -86,6 +86,12 @@ const search = async(body) => {
                 attributes: { exclude: ['createdAt', 'updatedAt'] }
             }],
             attributes: { exclude: ['Password', 'crreatedAt', 'updatedAt'] }
+        });
+        user = user.toJSON()
+        let pth = path.join(__dirname,'../../profiles')
+        fs.readdirSync(pth).forEach(file => {
+            if(file.split('.')[0].toString() === user["Username"].toString())
+                user["profileurl"] = `http://localhost:3001/profiles/${file}`
         });
         return user;
     } else if (body.username) {
