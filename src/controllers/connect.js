@@ -2,7 +2,8 @@ const connectRouter = require('express').Router()
 const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard, updateProfile, AddAnnoUser } = require('../services/connectServices');
 const  { authenticateToken } = require('../utils/middleware');
 const jwt = require('jsonwebtoken');
-const { ACCESS_TOKEN_SECRET } = require('../utils/config'); 
+const { ACCESS_TOKEN_SECRET } = require('../utils/config');
+console.log(ACCESS_TOKEN_SECRET.toString());
 
 connectRouter.post('/signup', async(request, response) => {
 	try{
@@ -12,6 +13,8 @@ connectRouter.post('/signup', async(request, response) => {
 			return response.status(403).send();
 		}
 		const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
+		console.log(accessToken);
+		console.log(jwt.verify(accessToken.toString(), ACCESS_TOKEN_SECRET.toString()));
         response.status(200).json({accessToken: accessToken, userId: user.Id});
 	} catch(err) {
 		console.log(err)
@@ -57,10 +60,9 @@ connectRouter.post('/updaterespect', async(req, res) => {
 connectRouter.post('/updateProfile', authenticateToken, async(req, res) => {
 	updateProfile(req, res);
 });
-connectRouter.post('/createAnnoUser', async(request, response) => {
+connectRouter.post('/createAnnoUser', authenticateToken, async(request, response) => {
 	try{
-        let body = request.body;
-		const user = await AddAnnoUser(body);
+		const user = await AddAnnoUser(request);
 		if (!user) {
 			return response.status(403).send();
 		}

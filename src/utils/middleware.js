@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const ACCESS_TOKEN_SECRET = require('../utils/config')
+const { ACCESS_TOKEN_SECRET } = require('../utils/config');
 
 const requestLogger = (request, _, next) => {
 	console.log('Method:', request.method);
@@ -14,13 +14,13 @@ const unknownEndpoint = (_, response) => {
 }
 
 const authenticateToken = (req, res, next) => {
-	const authHeader = req.headers['authorization']
-	  const token = authHeader && authHeader.split(' ')[1];
+	const authHeader = req.header('Authorization');
+	const token = authHeader.split(' ')[1];
 	if(!token)
 		return res.status(401).send()
 	else
 	{
-		jwt.verify(token, ACCESS_TOKEN_SECRET.toString(), (err, response) => {
+		jwt.verify(token.toString(), ACCESS_TOKEN_SECRET.toString(), (err, response) => {
 			if(err)
 			{
 				console.log(err);
