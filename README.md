@@ -31,6 +31,18 @@ ALTER USER '<your_username>'@'localhost' IDENTIFIED WITH mysql_native_password B
 FLUSH PRIVILEGES;
 ```
 Enter MySQL console of your user by ```mysql -u <username> -p``` and create a database named Connect
+
+Create the Connect database - 
+```
+CREATE DATABASE Connect;
+```
+* Currently Sequelise ORM is being used to run SQL queries.
+* All tables need to be mapped as models under the model folder & imported in the `sequelize.js` file, as mentioned below.
+```
+const User = UserModel(sequelize, Sequelize.DataTypes);
+// You would need to pass the above two parameters, which are defined in the sequelize.js file, to your model function.
+```
+* To resynchronise your database, change the `sequelize.sync()` call to `sequelize.sync({force: true})`. Make sure to remove the `force: true` once you have resynchronised your database.
 ### Run
 To start the server: `npm start`  
 To run in development environment: `npm run dev`

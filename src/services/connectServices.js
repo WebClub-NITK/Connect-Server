@@ -1,6 +1,6 @@
 const { response } = require('express');
 const jwt = require('jsonwebtoken');
-const ACCESS_TOKEN_SECRET = require('../utils/config');
+const { ACCESS_TOKEN_SECRET } = require('../utils/config');
 const { User, Profile } = require('../utils/sequelize');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
@@ -27,13 +27,19 @@ const AddUser = (body) => {
     return u;
 }
 
-const AddAnnoUser = (body) => {
-    let { email, username, passwordUser } = body;
+const AddAnnoUser = (request) => {
+    let { username, passwordUser } = request.body;
     let u;
     u = (async () => {
+        const publicUser = await User.findOne({
+            where: {
+                Id: parseInt(request.userId.toString())
+            },
+            attributes: ['ProfileId']
+        });
         const profile = await Profile.findOne({
             where: {
-                Email: email
+                Id: publicUser.ProfileId
             }
         });
         if (profile.AnnouserSet) return;
@@ -159,7 +165,13 @@ const Updaterespect = async(req,res) => {
 }
 
 const updateProfile = async(req, res) => {
-    let { profileId, email, name, ptype, branch, semester } = req.body;
+    let { email, name, ptype, branch, semester } = req.body;
+    const user = await User.findOne({
+        where: {
+            Id: parseInt(req.userId.toString())
+        },
+        attributes: ['ProfileId']
+    });
     await Profile.update(
         {
             Name: name,
@@ -169,7 +181,7 @@ const updateProfile = async(req, res) => {
         },
         {
             where: {
-                Id: parseInt(profileId),
+                Id: user.ProfileId.toString(),
                 Email: email
             }
         }
