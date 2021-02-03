@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
     destination: './profiles',
     filename: (req, file, cb) => {
 		console.log(file)
-		const name = `${req.params.username}${path.extname(file.originalname)}`
+		const name = `${req.params.username}`
         return cb(null, name)
     }
 })

@@ -94,11 +94,7 @@ const search = async(body) => {
             attributes: { exclude: ['Password', 'crreatedAt', 'updatedAt'] }
         });
         user = user.toJSON()
-        let pth = path.join(__dirname,'../../profiles')
-        fs.readdirSync(pth).forEach(file => {
-            if(file.split('.')[0].toString() === user["Username"].toString())
-                user["profileurl"] = `http://localhost:3001/profiles/${file}`
-        });
+        user["profileurl"] = `http://localhost:3001/profiles/${user.Username}`
         return user;
     } else if (body.username) {
         const username = `%${body.username}%`;
@@ -124,7 +120,7 @@ const search = async(body) => {
             }]
         });
         userIds = userIds.map((profile) => profile.Users.map((u) => u.Id));
-        const users = await User.findAll({
+        let users = await User.findAll({
             where: {
                 [Op.or]: [
                     {
@@ -143,8 +139,15 @@ const search = async(body) => {
                 model: Profile,
                 attributes: { exclude: ['createdAt', 'updatedAt'] }
             }],
-            attributes: { exclude: ['Password', 'createdAt', 'updatedAt'] }
+            attributes: { exclude: ['Password', 'createdAt', 'updatedAt'] },
+            raw: true,
+            nest: true
         });
+        users = users.map(user => {
+            user["profileurl"] = `http://localhost:3001/profiles/${user.Username}`;
+            return user;
+        })
+        console.log(users)
         return users;
     }
 }
