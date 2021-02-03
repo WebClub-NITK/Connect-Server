@@ -73,6 +73,17 @@ blogsRouter.put("/:id", async (request, response) => {
   }
 });
 
+blogsRouter.delete("/:id", async (request, response) => {
+  try {
+    const id = request.params.id;
+    await Blog.deleteOne({ _id: id });
+    response.status(204).json();
+  } catch (err) {
+    console.log(err.message);
+    response.status(400).json({ error: error.message });
+  }
+});
+
 blogsRouter.get("/search", async (request, response) => {
 
   try {
@@ -171,5 +182,19 @@ blogsRouter.post("/remove_images", async (request, response) => {
     response.status(501).send();
   }
 });
+
+blogsRouter.get("/live/title", async (request,response) => {
+  try{
+   const blogs = await Blog.find({}).select('title');
+   if (blogs) {
+     response.status(201).json(blogs);
+   } else {
+     response.status(404).send();
+   }
+  }catch(err){
+    console.log(err);
+    response.status(501).send();
+  }
+})
 
 module.exports = blogsRouter;
