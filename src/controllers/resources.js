@@ -10,7 +10,7 @@ const docRouter = require('./docs')
 const Branch = require('../models/resource-module/branch')
 const Course = require('../models/resource-module/course')
 const Resource = require('../models/resource-module/resource')
-
+const Feedback  = require('../models/resource-module/feedback')
 resourcesRouter.get('/resources', (request, response) => {
 
     Resource.find().then(resources=>{
@@ -158,6 +158,66 @@ resourcesRouter.delete('/resource/:resource_id',async (req,res)=>{
     res.send("Resource successfully deleted");
 
 });
+resourcesRouter.get('/resource/:resource_id/like', async (req,res)=>{
+    // let feedback = await Feedback.findOne({user:req.user.id})
+    let status = "Liked";
+    if(feedback && feedback.positive == true)
+        {
+         feedback =  await Feedback.findByIdAndDelete(feedback.id);
+         status= "Unliked"   
+        }
+    else if(feedback && feedback.positive == false )
+        {
+            feedback.positive= true;
+            await feedback.save();   
+        }
+    else {
+         feedback  = new Feedback({
+             resource:ObjectId(req.params.resource_id),
+             positive:true,
+            //  user:ObjectId(req.user.id)
+         });
+         await feedback.save();                    
+    }
+    let likes = await Feedback.find({positive: true});
+    let dislikes = await Feedback.find({positive: false});
+    res.json({status:status,
+         likes:likes,
+          dislikes: dislikes,
+        //   user:req.user
+    });
+
+})
+resourcesRouter.get('/resource/:resource_id/dislike', async (req,res)=>{
+    // let feedback = await Feedback.findOne({user:req.user.id})
+    let status = "Disliked";
+    if(feedback && feedback.positive ==false)
+        {
+         feedback =  await Feedback.findByIdAndDelete(feedback.id);
+         status= "Removed disliked"   
+        }
+    else if(feedback && feedback.positive == true )
+        {
+            feedback.positive= false;
+            await feedback.save();   
+        }
+    else {
+         feedback  = new Feedback({
+             resource:ObjectId(req.params.resource_id),
+             positive:false,
+            //  user:ObjectId(req.user.id)
+         });
+         await feedback.save();                    
+    }
+    let likes = await Feedback.find({positive: true});
+    let dislikes = await Feedback.find({positive: false});
+    res.json({status:status,
+         likes:likes,
+          dislikes: dislikes,
+        //   user:req.user
+    });
+
+})
 
 resourcesRouter.use('/docs',docRouter)
 
