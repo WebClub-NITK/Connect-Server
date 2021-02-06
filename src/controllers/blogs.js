@@ -84,12 +84,13 @@ blogsRouter.delete("/:id", async (request, response) => {
   }
 });
 
-blogsRouter.get("/search", async (request, response) => {
+blogsRouter.get("/search/:pageNumber", async (request, response) => {
 
   try {
     const title = (request.query.q).trim();
-    const blogs = await getSearchBlogs(title);
-
+    const pageNumber = request.params.pageNumber;
+    const numberOfPosts = (pageNumber-1)*10;
+    const blogs = await getSearchBlogs(title, numberOfPosts);
     if (blogs) {
       response.status(201).json(blogs);
     } else {
@@ -105,7 +106,6 @@ blogsRouter.get("/:id", async (request, response) => {
   try {
     const id = request.params.id;
     const blog = await Blog.findById(id);
-
     if (blog) {
       response.status(201).json(blog);
     } else {
@@ -117,11 +117,12 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
-blogsRouter.get("/tag/:tag", async (request, response) => {
+blogsRouter.get("/tag/:tag/:pageNumber", async (request, response) => {
   try {
     const tag = request.params.tag;
-    const blogs = await getBlogsByTags(tag);
-
+    const pageNumber = request.params.pageNumber;
+    const numberOfPosts = (pageNumber-1)*10;
+    const blogs = await getBlogsByTags(tag,numberOfPosts);
     if (blogs) {
       response.status(201).json(blogs);
     } else {

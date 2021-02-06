@@ -20,21 +20,30 @@ const getAllBlogs = async (numberOfPosts) => {
 	return blogs
 }
 
-const getSearchBlogs = async (title) => {
+const getSearchBlogs = async (title, numberOfPosts) => {
 	const blogs = await Blog.find({
 		$or: [
 			{ body: { $regex: `.*${title}.*`, $options: "i" } },
 			{ title: { $regex: `.*${title}.*`, $options: "i" } },
 		],
+	}).skip(numberOfPosts).limit(10);
+	const count = await Blog.countDocuments({
+		$or: [
+			{ body: { $regex: `.*${title}.*`, $options: "i" } },
+			{ title: { $regex: `.*${title}.*`, $options: "i" } },
+		],
 	});
-	return blogs;
+	return {blogs:blogs,count:count};
 }
 
-const getBlogsByTags = async (tag) => {
-	const blogs = await Blog.find({
+const getBlogsByTags = async (tag, numberOfPosts) => {
+	const count = await Blog.countDocuments({
 		tags: { $regex: `.*${tag}.*`, $options: "i" },
 	});
-	return blogs;
+	const blogs = await Blog.find({
+		tags: { $regex: `.*${tag}.*`, $options: "i" },
+	}).skip(numberOfPosts).limit(10);
+	return {blogs:blogs, count: count};
 }
 
 const insertBlog = async (body) => {
