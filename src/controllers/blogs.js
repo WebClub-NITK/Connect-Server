@@ -5,6 +5,8 @@ const fs = require("fs");
 
 const {
   getAllBlogs,
+  getSearchBlogs,
+  getBlogsByTags,
   insertBlog,
   updateBlog,
 } = require("../services/blogServices");
@@ -31,10 +33,13 @@ const imageFilter = function (req, file, cb) {
 
 var upload = multer({ storage: storage, fileFilter: imageFilter });
 
-blogsRouter.get("/", async (request, response) => {
+blogsRouter.get("/page/:pageNumber", async (request, response) => {
+  const pageNumber = request.params.pageNumber;
+  const numberOfPosts = (pageNumber-1)*10;
+  const count = await Blog.countDocuments({});
   try {
-    const blogs = await getAllBlogs();
-    response.json(blogs);
+    const blogs = await getAllBlogs(numberOfPosts);
+    response.json({blogs:blogs,count:count});
   } catch (err) {
     console.log(err);
     response.status(500).send("Something went wrong");
@@ -79,13 +84,13 @@ blogsRouter.delete("/:id", async (request, response) => {
   }
 });
 
-blogsRouter.get("/search", async (request, response) => {
-  try {
-    const title = request.query.title;
-    const blogs = await Blog.find({
-      title: { $regex: `.*${title}.*`, $options: "i" },
-    });
+blogsRouter.get("/search/:pageNumber", async (request, response) => {
 
+  try {
+    const title = (request.query.q).trim();
+    const pageNumber = request.params.pageNumber;
+    const numberOfPosts = (pageNumber-1)*10;
+    const blogs = await getSearchBlogs(title, numberOfPosts);
     if (blogs) {
       response.status(201).json(blogs);
     } else {
@@ -101,7 +106,6 @@ blogsRouter.get("/:id", async (request, response) => {
   try {
     const id = request.params.id;
     const blog = await Blog.findById(id);
-
     if (blog) {
       response.status(201).json(blog);
     } else {
@@ -113,13 +117,12 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
-blogsRouter.get("/tag/:tag", async (request, response) => {
+blogsRouter.get("/tag/:tag/:pageNumber", async (request, response) => {
   try {
     const tag = request.params.tag;
-    const blogs = await Blog.find({
-      tags: { $regex: `.*${tag}.*`, $options: "i" },
-    });
-
+    const pageNumber = request.params.pageNumber;
+    const numberOfPosts = (pageNumber-1)*10;
+    const blogs = await getBlogsByTags(tag,numberOfPosts);
     if (blogs) {
       response.status(201).json(blogs);
     } else {
@@ -180,5 +183,19 @@ blogsRouter.post("/remove_images", async (request, response) => {
     response.status(501).send();
   }
 });
+
+blogsRouter.get("/live/title", async (request,response) => {
+  try{
+   const blogs = await Blog.find({}).select('title');
+   if (blogs) {
+     response.status(201).json(blogs);
+   } else {
+     response.status(404).send();
+   }
+  }catch(err){
+    console.log(err);
+    response.status(501).send();
+  }
+})
 
 module.exports = blogsRouter;
