@@ -13,6 +13,14 @@ const resourceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    likes: {
+        type: Number,
+        min: 0,
+    },
+    dislikes: {
+        type: Number,
+        min: 0,
+    },
     course:{
         type:ObjectId,
         ref: "Course"
