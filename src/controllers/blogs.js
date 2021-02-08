@@ -128,6 +128,39 @@ blogsRouter.get("/:id", async (request, response) => {
   }
 });
 
+blogsRouter.post('/:id/like', authenticateToken, async (request, response) => {
+  try {
+    const id = request.params.id;
+    const blog = await Blog.findById(id).lean();
+
+    const user_id = request.userId.toString()
+
+    console.log(user_id)
+    console.log(blog.likes)
+    console.log(blog.likes.includes(user_id))
+
+    if(blog.likes.includes(user_id)) {
+      const index = blog.likes.indexOf(user_id);
+      console.log(index)
+      if (index > -1) {
+        blog.likes.splice(index, 1);
+      }
+    } else {
+      blog.likes.push(user_id)
+    }
+
+    console.log(blog)
+
+    await Blog.findByIdAndUpdate(id, blog)
+
+    response.status(200).send()
+
+  } catch(err){
+    console.log(err)
+    response.status(500).send()
+  }
+})
+
 blogsRouter.get("/tag/:tag", async (request, response) => {
   try {
     const tag = request.params.tag;
