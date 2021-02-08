@@ -8,6 +8,11 @@ const {
   insertBlog,
   updateBlog,
 } = require("../services/blogServices");
+
+const { authenticateToken } = require('../utils/middleware')
+
+const {search} = require('../services/connectServices')
+
 const Blog = require("../models/blog");
 
 const storage = multer.diskStorage({
@@ -41,11 +46,12 @@ blogsRouter.get("/", async (request, response) => {
   }
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", authenticateToken, async (request, response) => {
   try {
     const body = request.body;
+    const userId = request.userId;
 
-    const savedBlog = await insertBlog(body);
+    const savedBlog = await insertBlog(userId, body);
 
     response.status(200).json(savedBlog);
   } catch (error) {
@@ -54,12 +60,13 @@ blogsRouter.post("/", async (request, response) => {
   }
 });
 
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put("/:id", authenticateToken, async (request, response) => {
   try {
     const id = request.params.id;
     const body = request.body;
+    const userId = request.userId;
 
-    const updatedBlog = await updateBlog(id, body);
+    const updatedBlog = await updateBlog(userId, id, body);
 
     response.status(200).json(updatedBlog);
   } catch (error) {
@@ -100,9 +107,17 @@ blogsRouter.get("/search", async (request, response) => {
 blogsRouter.get("/:id", async (request, response) => {
   try {
     const id = request.params.id;
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).lean();
 
     if (blog) {
+      if(blog.author_id){
+        const user = await search({id: blog.author_id})
+        console.log(user)
+        blog.author_name = user.Profile.Name
+        blog.author_username = user.Username
+        blog.author_profileurl = user.profileurl
+      }
+
       response.status(201).json(blog);
     } else {
       response.status(404).send();

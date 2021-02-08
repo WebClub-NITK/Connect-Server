@@ -5,8 +5,9 @@ const getAllBlogs = async () => {
 	return blogs
 }
 
-const insertBlog = async (body) => {
+const insertBlog = async (userId, body) => {
 	const blog = new Blog({
+		author_id: userId,
 		title: body.title,
 		body: JSON.stringify(body.body),
 		tags: body.tags,
@@ -15,14 +16,14 @@ const insertBlog = async (body) => {
 	return blog.save()
 }
 
-const updateBlog = async (id, body) => {
+const updateBlog = async (userId, id, body) => {
 	const update = {
 		title: body.title,
 		body: JSON.stringify(body.body),
 		tags: body.tags,
 		coverImageUrl: body.coverImageUrl
 	}
-	const updatedBlog = await Blog.findByIdAndUpdate(id, update, {new: true})
+	const updatedBlog = await Blog.findOneAndUpdate({_id: id, author_id: userId}, update, {new: true})
 	return updatedBlog
 }
 
