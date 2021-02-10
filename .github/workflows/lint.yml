@@ -1,0 +1,13 @@
+name: Test Lint
+
+on: [pull_request]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: install dependencies
+        run: npm install
+      - name: run lint check
+        run: ./node_modules/.bin/eslint '**/*.js'
