@@ -6,23 +6,31 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require("path");
 const Sequelize = require('sequelize');
+const { ValidationError } = require('sequelize');
 const Op = Sequelize.Op;
 
 const AddUser = (body) => {
     let { passwordUser, username, email } = body;
     let u;
     u = (async () => {
-        const profile = await Profile.create({
-            Email: email
-        });
-        if (!u) return;
-        passwordUser = await bcrypt.hash(passwordUser, 10);
-        const user = await User.create({
-            Username: username,
-            Password: passwordUser,
-            ProfileId: profile.Id
-        });
-        return user;
+        try {
+            const profile = await Profile.create({
+                Email: email
+            });
+            if (!pr) return;
+            passwordUser = await bcrypt.hash(passwordUser, 10);
+            const user = await User.create({
+                Username: username,
+                Password: passwordUser,
+                ProfileId: profile.Id
+            });
+            return user;
+        } catch (e) {
+            console.log(e);
+            if (e instanceof ValidationError) {
+                return e.errors.map((e) => e.message.split('.')[1]);
+            }
+        }
     })();
     return u;
 }
@@ -50,7 +58,7 @@ const AddAnnoUser = (request) => {
         });
         return user;
     })();
-    return u;    
+    return u;
 }
 
 const AuthUser = (body, response) => {
@@ -66,7 +74,7 @@ const AuthUser = (body, response) => {
         }
         const auth = await bcrypt.compare(password.toString(), user.Password.toString());
         if (auth) {
-            const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
+            const accessToken = jwt.sign({ userId: user.Id }, ACCESS_TOKEN_SECRET.toString());
             return response.json({ accessToken: accessToken, userId: user.Id });
         } else {
             return response.status(401).send();
@@ -74,13 +82,13 @@ const AuthUser = (body, response) => {
     })();
 }
 
-const RetreiveInfo = async() => {
+const RetreiveInfo = async () => {
     var jsonVal;
     jsonVal = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../public/info.json'), 'utf-8'));
     return jsonVal;
 }
 
-const search = async(body) => {
+const search = async (body) => {
     if (body.id) {
         const userId = parseInt(body.id);
         let user = await User.findOne({
@@ -147,7 +155,6 @@ const search = async(body) => {
             user["profileurl"] = `http://localhost:3001/profiles/${user.Username}`;
             return user;
         })
-        console.log(users)
         return users;
     }
 }
@@ -162,12 +169,12 @@ const leaderboard = async () => {
     });
     return users;
 }
-const Updaterespect = async(req,res) => {
-    await User.update({ Respect: Sequelize.literal(`Respect + ${req.body.amount}`)},{ where: {Id: req.body.userId}})
+const Updaterespect = async (req, res) => {
+    await User.update({ Respect: Sequelize.literal(`Respect + ${req.body.amount}`) }, { where: { Id: req.body.userId } })
     res.status(200).send()
 }
 
-const updateProfile = async(req, res) => {
+const updateProfile = async (req, res) => {
     let { email, name, ptype, branch, semester } = req.body;
     const user = await User.findOne({
         where: {
@@ -180,7 +187,7 @@ const updateProfile = async(req, res) => {
             Name: name,
             ProgrammeType: parseInt(ptype.toString()),
             Department: parseInt(branch.toString()),
-            Semester: parseInt(semester.toString()) 
+            Semester: parseInt(semester.toString())
         },
         {
             where: {

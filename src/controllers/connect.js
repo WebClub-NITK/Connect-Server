@@ -33,6 +33,9 @@ connectRouter.post('/signup', async(request, response) => {
 	try{
         let body = request.body;
 		const user = await AddUser(body);
+        if (user instanceof Array) {
+            return response.status(200).json(user);
+        }
 		if (!user) {
 			return response.status(403).send();
 		}
