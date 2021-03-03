@@ -184,9 +184,14 @@ blogsRouter.post("/remove_images", async (request, response) => {
   }
 });
 
-blogsRouter.get("/live/title", async (request,response) => {
+// Blog titles for live search
+blogsRouter.get("/live/:title", async (request,response) => {
+  const title = request.params.title;
   try{
-   const blogs = await Blog.find({}).select('title');
+   const blogs = await Blog.find({
+     title: { $regex: `.*${title}.*`, $options: "i" }
+   }).select('title');
+
    if (blogs) {
      response.status(201).json(blogs);
    } else {

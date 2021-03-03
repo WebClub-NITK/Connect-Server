@@ -5,6 +5,7 @@ const blogSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		minlength: 6,
+		index: true
 	},
 	coverImageUrl: {
 		type: String,
@@ -15,7 +16,8 @@ const blogSchema = new mongoose.Schema({
 		minlength: 10
 	},
 	tags: [{
-		type: String
+		type: String,
+		index: true
 	}]
 }, { timestamps: true })
 
