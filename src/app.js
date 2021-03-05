@@ -17,9 +17,12 @@ app.use(cors())
 app.use('/static', express.static(path.join(__dirname, '../public')))
 // exposing the blog_images directory
 app.use('/blog_images', express.static(path.join(__dirname, '../blog_images')))
+//exposing the profile pics
+app.use('/profiles', express.static(path.join(__dirname, '../profiles')))
 // parse json in requests
 app.use(express.json())
 // logs incoming requests
+app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger)
 
 // blogs route handler

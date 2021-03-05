@@ -1,6 +1,6 @@
 const { response } = require('express');
 const jwt = require('jsonwebtoken');
-const ACCESS_TOKEN_SECRET = require('../utils/config');
+const { ACCESS_TOKEN_SECRET } = require('../utils/config');
 const { User, Profile } = require('../utils/sequelize');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
@@ -9,15 +9,10 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 const AddUser = (body) => {
-    let { passwordUser, passwordAnnoUser, username, annoUser, name, ProgrammeType, branch, semester, email } = body;
+    let { passwordUser, username, email } = body;
     let u;
     u = (async () => {
-        console.log(branch, parseInt(branch));
         const profile = await Profile.create({
-            Name: name,
-            ProgrammeType: parseInt(ProgrammeType),
-            Department: parseInt(branch),
-            Semester: parseInt(semester),
             Email: email
         });
         if (!u) return;
@@ -27,14 +22,35 @@ const AddUser = (body) => {
             Password: passwordUser,
             ProfileId: profile.Id
         });
-        passwordAnnoUser = await bcrypt.hash(passwordAnnoUser, 10);
-        const annoUserObj = await User.create({
-            Username: annoUser,
-            Password: passwordAnnoUser,
-        });
         return user;
     })();
     return u;
+}
+
+const AddAnnoUser = (request) => {
+    let { username, passwordUser } = request.body;
+    let u;
+    u = (async () => {
+        const publicUser = await User.findOne({
+            where: {
+                Id: parseInt(request.userId.toString())
+            },
+            attributes: ['ProfileId']
+        });
+        const profile = await Profile.findOne({
+            where: {
+                Id: publicUser.ProfileId
+            }
+        });
+        if (profile.AnnouserSet) return;
+        passwordUser = await bcrypt.hash(passwordUser, 10);
+        const user = await User.create({
+            Username: username,
+            Password: passwordUser
+        });
+        return user;
+    })();
+    return u;    
 }
 
 const AuthUser = (body, response) => {
@@ -67,7 +83,7 @@ const RetreiveInfo = async() => {
 const search = async(body) => {
     if (body.id) {
         const userId = parseInt(body.id);
-        const user = await User.findOne({
+        let user = await User.findOne({
             where: {
                 Id: userId
             },
@@ -77,6 +93,8 @@ const search = async(body) => {
             }],
             attributes: { exclude: ['Password', 'crreatedAt', 'updatedAt'] }
         });
+        user = user.toJSON()
+        user["profileurl"] = `http://localhost:3001/profiles/${user.Username}`
         return user;
     } else if (body.username) {
         const username = `%${body.username}%`;
@@ -102,7 +120,7 @@ const search = async(body) => {
             }]
         });
         userIds = userIds.map((profile) => profile.Users.map((u) => u.Id));
-        const users = await User.findAll({
+        let users = await User.findAll({
             where: {
                 [Op.or]: [
                     {
@@ -121,15 +139,66 @@ const search = async(body) => {
                 model: Profile,
                 attributes: { exclude: ['createdAt', 'updatedAt'] }
             }],
-            attributes: { exclude: ['Password', 'createdAt', 'updatedAt'] }
+            attributes: { exclude: ['Password', 'createdAt', 'updatedAt'] },
+            raw: true,
+            nest: true
         });
+        users = users.map(user => {
+            user["profileurl"] = `http://localhost:3001/profiles/${user.Username}`;
+            return user;
+        })
+        console.log(users)
         return users;
     }
+}
+
+const leaderboard = async () => {
+    const users = await User.findAll({
+        order: [
+            ["respect", "DESC"]
+        ],
+        limit: 10,
+        attributes: ['Id', 'Username', 'Respect']
+    });
+    return users;
+}
+const Updaterespect = async(req,res) => {
+    await User.update({ Respect: Sequelize.literal(`Respect + ${req.body.amount}`)},{ where: {Id: req.body.userId}})
+    res.status(200).send()
+}
+
+const updateProfile = async(req, res) => {
+    let { email, name, ptype, branch, semester } = req.body;
+    const user = await User.findOne({
+        where: {
+            Id: parseInt(req.userId.toString())
+        },
+        attributes: ['ProfileId']
+    });
+    await Profile.update(
+        {
+            Name: name,
+            ProgrammeType: parseInt(ptype.toString()),
+            Department: parseInt(branch.toString()),
+            Semester: parseInt(semester.toString()) 
+        },
+        {
+            where: {
+                Id: user.ProfileId.toString(),
+                Email: email
+            }
+        }
+    );
+    res.status(200).send();
 }
 
 module.exports = {
     AddUser,
     AuthUser,
     RetreiveInfo,
-    search
+    search,
+    leaderboard,
+    Updaterespect,
+    updateProfile,
+    AddAnnoUser
 }
