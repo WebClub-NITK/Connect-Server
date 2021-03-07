@@ -3,6 +3,7 @@ const express = require('express')
 const path = require('path')
 const app = express()
 const cors = require('cors')
+const url = require('url')
 
 // function imports
 const { requestLogger, unknownEndpoint } = require('./utils/middleware')
@@ -24,6 +25,10 @@ app.use(express.json())
 // logs incoming requests
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger)
+
+app.get('/', (request, response) => {
+    response.json({message: "Welcome to connect server 🔥"})
+})
 
 // blogs route handler
 app.use('/blogs', blogsRouter)
