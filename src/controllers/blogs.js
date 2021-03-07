@@ -2,6 +2,7 @@ const blogsRouter = require("express").Router();
 var multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const url = require('url')
 
 const {
   getAllBlogs,
@@ -139,10 +140,14 @@ blogsRouter.post(
   upload.single("image"),
   async (request, response) => {
     try {
+        const server_url = url.format({
+            protocol: request.protocol,
+            host: request.get('host')
+        })
       const res = {
         success: 1,
         file: {
-          url: `http://localhost:3001/blog_images/${request.file.filename}`,
+          url: `${server_url}/blog_images/${request.file.filename}`,
           from_server: true,
         },
       };
