@@ -1,12 +1,13 @@
-const {PASSWORD, USER, DATABASE} = require('../utils/config')
+const {DB_HOST, PASSWORD, USER, DATABASE} = require('../utils/config')
 const mysql = require('mysql')
 
 const connection = mysql.createConnection({
-    host: 'localhost',
+    host: DB_HOST,
     user: USER,
     password: PASSWORD,
     database: DATABASE,
-    multipleStatements: true
+    multipleStatements: true,
+    ssl: true,
 })
 
 const Executequery = (q,vals,callback) => {

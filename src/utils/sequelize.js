@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
-const { USER, PASSWORD, DATABASE } = require('./config');
+const { DB_HOST, USER, PASSWORD, DATABASE } = require('./config');
 const UserModel = require('../models/User');
 const ProfileModel = require('../models/Profile');
 const sequelize = new Sequelize(DATABASE, USER, PASSWORD, {
-    host: 'localhost',
+    host: DB_HOST,
     dialect: 'mysql'
 });
 (async () => {

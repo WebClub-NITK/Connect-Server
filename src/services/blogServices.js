@@ -15,9 +15,35 @@ const blogs = [
 	},
 ]
 
-const getAllBlogs = async () => {
-	const blogs = await Blog.find({})
+const getAllBlogs = async (numberOfPosts) => {
+	const blogs = await Blog.find({}).skip(numberOfPosts).limit(10);
 	return blogs
+}
+
+const getSearchBlogs = async (title, numberOfPosts) => {
+	const blogs = await Blog.find({
+		$or: [
+			{ body: { $regex: `.*${title}.*`, $options: "i" } },
+			{ title: { $regex: `.*${title}.*`, $options: "i" } },
+		],
+	}).skip(numberOfPosts).limit(10);
+	const count = await Blog.countDocuments({
+		$or: [
+			{ body: { $regex: `.*${title}.*`, $options: "i" } },
+			{ title: { $regex: `.*${title}.*`, $options: "i" } },
+		],
+	});
+	return {blogs:blogs,count:count};
+}
+
+const getBlogsByTags = async (tag, numberOfPosts) => {
+	const count = await Blog.countDocuments({
+		tags: { $regex: `.*${tag}.*`, $options: "i" },
+	});
+	const blogs = await Blog.find({
+		tags: { $regex: `.*${tag}.*`, $options: "i" },
+	}).skip(numberOfPosts).limit(10);
+	return {blogs:blogs, count: count};
 }
 
 const insertBlog = async (body) => {
@@ -43,6 +69,8 @@ const updateBlog = async (id, body) => {
 
 module.exports = {
 	getAllBlogs,
+	getSearchBlogs,
+	getBlogsByTags,
 	insertBlog,
-	updateBlog
+	updateBlog,
 }
