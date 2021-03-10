@@ -1,7 +1,7 @@
 const { response } = require('express');
 const jwt = require('jsonwebtoken');
 const { ACCESS_TOKEN_SECRET, SERVER_URL } = require('../utils/config');
-const { User, Profile } = require('../utils/sequelize');
+const { User, Profile, Follow } = require('../utils/sequelize');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require("path");
@@ -235,6 +235,26 @@ const instantiateUser = async (userId) => {
     }
 }
 
+const follow = async (req, res) => {
+    console.log(req.body);
+    let followingid = req.body.id;
+    let followersid = req.userId;
+    console.log(req.userId)
+    console.log(followingid,followersid)
+    try{
+        await Follow.create({
+            FollowerIdId: followersid,
+            FollowingIdId: followingid
+        })
+        res.status(200).send();
+    }
+    catch(e)
+    {
+        console.log(e)
+        res.status(400).send();
+    }   
+}
+
 module.exports = {
     AddUser,
     AuthUser,
@@ -244,5 +264,6 @@ module.exports = {
     Updaterespect,
     updateProfile,
     AddAnnoUser,
-    instantiateUser
+    instantiateUser,
+    follow
 }

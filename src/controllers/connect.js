@@ -1,5 +1,5 @@
 const connectRouter = require('express').Router()
-const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard, updateProfile, AddAnnoUser } = require('../services/connectServices');
+const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard, updateProfile, AddAnnoUser, follow } = require('../services/connectServices');
 const  { authenticateToken } = require('../utils/middleware');
 const jwt = require('jsonwebtoken');
 const { ACCESS_TOKEN_SECRET } = require('../utils/config'); 
@@ -8,14 +8,15 @@ const path = require("path");
 
 const storage = multer.diskStorage({
     destination: './profiles',
-    filename: (req, file, cb) => {
-		console.log(file)
+    filename: function(req, file, cb){
+		console.log("\n",file,"\n")
 		const name = `${req.params.username}`
         return cb(null, name)
     }
 })
 
 const imageFilter = function (req, file, cb) {
+    console.log(file.originalname);
 	if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
 	  req.fileValidationError = "Only image files are allowed!";
 	  return cb(new Error("Only image files are allowed!"), false);
@@ -99,7 +100,8 @@ connectRouter.get('/search', async(req, res, next) => {
 
 
 connectRouter.post('/upload_profilepic/:username', upload.single('profile'),async(req,res) => {
-	return res.status(200).send();
+	console.log(req.body)
+    return res.status(200).send();
 })
 
 /*
@@ -162,5 +164,10 @@ connectRouter.post('/createAnnoUser', authenticateToken, async(request, response
 		next(e);
 	}
 });
+
+connectRouter.post('/follow',authenticateToken, async(req, res) => {
+    console.log(req.body)
+    follow(req, res);
+})
 
 module.exports = connectRouter
