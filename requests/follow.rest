@@ -1,0 +1,7 @@
+POST http://localhost:3001/connect/follow
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTYxNTM2Mzk0NX0.IukRq4jYtBBRuk8oyNmG5nIYv5zF3YcLssILfqrTm2A
+
+{
+    "id": 4
+}
