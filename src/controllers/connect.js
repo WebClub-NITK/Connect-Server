@@ -29,53 +29,73 @@ const upload = multer({
 	fileFilter: imageFilter
 })
 
+/*
+Route to signup as a public user
+@params - {username, password, email}
+@response - {user object, signed access token}
+*/
 
-connectRouter.post('/signup', async(request, response) => {
+connectRouter.post('/signup', async(request, response, next) => {
 	try{
         let body = request.body;
-		const user = await AddUser(body);
+		const user = await AddUser(body, next);
         if (user instanceof Array) {
             return response.status(200).json(user);
         }
 		if (!user) {
-			return response.status(403).send();
+			return response.status(403).send('Forbidden Request');
 		}
 		const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
 		console.log(accessToken);
 		console.log(jwt.verify(accessToken.toString(), ACCESS_TOKEN_SECRET.toString()));
         response.status(200).json({accessToken: accessToken, userId: user.Id});
 	} catch(err) {
-		console.log(err)
-		response.status(500).send('Something went wrong')
+		next(err);
 	}
 })
 
-connectRouter.post('/login', async(request,response) => {
+/*
+Route to login to an account
+@params - {username, password}
+@response - {userId, signed access token}
+*/
+
+connectRouter.post('/login', async(request, response, next) => {
 	try{
-		let body = request.body
-		AuthUser(body,response)
+		AuthUser(request.body, response, next);
 	} catch(err) {
-		console.log(err)
-		response.status(500).send('Something went wrong')
+		next(err);
 	}
-})
-
-connectRouter.get('/dummy', authenticateToken,  async(req, res) => {
-	console.log(req.userId)
-	return res.status(200).send();
 });
+
 /* Requesting by passing headers(React)
 	let token = localStorage.getItem('accessToken').toString();
 	await axios.get(baseUrl + "/dummy", {headers: {Authorization: `Bearer ${token}`}})
+*/
+
+/*
+Route to fetch JSON data to populate static dropdown dataSource
+@params - None
+@response - Object with static dropdown dataSource
 */
 
 connectRouter.get('/info', async(_, res) => {
 	return res.status(200).send(await RetreiveInfo());
 });
 
-connectRouter.get('/search', async(req, res) => {
-	const response = await search(req.query);
-	return res.status(200).json(response);
+/*
+Route to search for users
+@params - {ID} or {username, email, name}
+@response - Array of user objects
+*/
+
+connectRouter.get('/search', async(req, res, next) => {
+    try {
+        const response = await search(req.query);
+        return res.status(200).json(response);
+    } catch (e) {
+        next(e);
+    }
 });
 
 
@@ -84,27 +104,64 @@ connectRouter.post('/upload_profilepic/:username', upload.single('profile'),asyn
     return res.status(200).send();
 })
 
-connectRouter.get('/leaderboard', async(_, res) => {
-	const users = await leaderboard();
-	return res.status(200).json(users);
+/*
+Route to obtain top 10 users ordered by their respect
+@params - None
+@response - [Array of user objects containg {Id, Username, Respect}]
+*/
+
+connectRouter.get('/leaderboard', async(_, res, next) => {
+    try {
+        const users = await leaderboard();
+        return res.status(200).json(users);
+    } catch (e) {
+        next(e);
+    }
 });
+
+/*
+Route to update respect
+@param - {userId, amount by which respect is to be incremented}
+@response - 200 OK(None)
+*/
+
 connectRouter.post('/updaterespect', async(req, res) => {
-	Updaterespect(req,res);
+	await Updaterespect(req.body.userId, req.body.amount);
+    res.status(200);
 });
-connectRouter.post('/updateProfile', authenticateToken, async(req, res) => {
-	updateProfile(req, res);
+
+/*
+Route to update profile of a public user
+@params - {email, name, ptype, branch, semester}
+@response - None
+*/
+
+connectRouter.post('/updateProfile', authenticateToken, async (req, res, next) => {
+	updateProfile(req, res, next);
 });
-connectRouter.post('/createAnnoUser', authenticateToken, async(request, response) => {
+
+/*
+Route to sign up as an anonymous user
+@params - {username, password}
+@response - {anonymousUserId, signed access token}
+*/
+
+connectRouter.post('/createAnnoUser', authenticateToken, async(request, response, next) => {
 	try{
 		const user = await AddAnnoUser(request);
+        if (typeof user === 'string') {
+            return response.status(401).send(user);
+        }
+        if (user instanceof Array) {
+            return response.status(200).json(user);
+        }
 		if (!user) {
-			return response.status(403).send();
+			return response.status(403).send('Forbidden Request');
 		}
 		const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
         response.status(200).json({accessToken: accessToken, userId: user.Id});
 	} catch(err) {
-		console.log(err)
-		response.status(500).send('Something went wrong')
+		next(e);
 	}
 });
 
