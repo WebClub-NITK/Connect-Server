@@ -13,6 +13,8 @@ const {
 } = require("../services/blogServices");
 const Blog = require("../models/blog");
 
+const { authenticateToken } = require("../utils/middleware");
+
 const storage = multer.diskStorage({
     destination: "./blog_images",
     filename: function (req, file, cb) {
@@ -47,11 +49,12 @@ blogsRouter.get("/page/:pageNumber", async (request, response) => {
     }
 });
 
-blogsRouter.post("/", async (request, response) => {
+blogsRouter.post("/", authenticateToken, async (request, response) => {
     try {
         const body = request.body;
+        const user = request.user;
 
-        const savedBlog = await insertBlog(body);
+        const savedBlog = await insertBlog(user.Id, body);
 
         response.status(200).json(savedBlog);
     } catch (error) {
