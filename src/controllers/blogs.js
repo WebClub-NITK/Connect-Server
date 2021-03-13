@@ -63,13 +63,13 @@ blogsRouter.post("/", authenticateToken, async (request, response) => {
     }
 });
 
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put("/:id", authenticateToken, async (request, response) => {
     try {
-        const id = request.params.id;
+        const blogId = request.params.id;
         const body = request.body;
+        const user = request.user;
 
-        const updatedBlog = await updateBlog(id, body);
-
+        const updatedBlog = await updateBlog(user.Id, blogId, body);
         response.status(200).json(updatedBlog);
     } catch (error) {
         console.log(error.message);
