@@ -6,7 +6,7 @@ const cors = require('cors')
 const url = require('url')
 
 // function imports
-const { requestLogger, unknownEndpoint } = require('./utils/middleware')
+const { requestLogger, unknownEndpoint, errorHandler } = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
 const connectRouter = require('./controllers/connect')
 const resourcesRouter = require('./controllers/resources')
@@ -41,5 +41,8 @@ app.use('/resource_module', resourcesRouter)
 
 // handles unknown endpoints
 app.use(unknownEndpoint)
+
+// Handle internal server errors which are not caught
+app.use(errorHandler);
 
 module.exports = app
