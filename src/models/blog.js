@@ -21,6 +21,13 @@ const blogSchema = new mongoose.Schema({
     tags: [{
         type: String,
         index: true
+    }],
+    views: {
+        type: Number,
+        default: 0
+    },
+    likes: [{
+        type: String
     }]
 }, { timestamps: true })
 

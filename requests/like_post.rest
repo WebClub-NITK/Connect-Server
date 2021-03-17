@@ -1,0 +1,5 @@
+PUT http://localhost:3001/blogs/600edeac3b33df18fc74e745/like
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTYxNTYxMzU4Nn0.4NNQUNYyG1Iyh8fNymtrsgvVz71tY0XcBvVpeFILSJg
+
+
+

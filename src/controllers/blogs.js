@@ -110,6 +110,8 @@ blogsRouter.get("/:id", async (request, response) => {
     try {
         const id = request.params.id;
         const blog = await Blog.findById(id);
+        blog.views += 1
+        blog.save()
         if (blog) {
             response.status(201).json(blog);
         } else {
@@ -207,6 +209,50 @@ blogsRouter.get("/live/:title", async (request,response) => {
         }
     }catch(err){
         console.log(err);
+        response.status(501).send();
+    }
+})
+
+blogsRouter.put('/:id/like', authenticateToken, async (request, response) => {
+    try {
+        const userId = request.user.Id
+        const postId = request.params.id
+
+        const conditions = { _id: postId, 'likes': {$ne: userId} }
+
+        const update = {
+            $addToSet: { likes: userId}
+        }
+
+        const updatedBlog = await Blog.findOneAndUpdate(conditions, update)
+
+        console.log(updatedBlog)
+
+        response.status(200).send();
+    } catch(err) {
+        console.log(err)
+        response.status(501).send();
+    }
+})
+
+blogsRouter.put('/:id/unlike', authenticateToken, async (request, response) => {
+    try {
+        const userId = request.user.Id
+        const postId = request.params.id
+
+        const conditions = { _id: postId, 'likes': {$in: [userId]} }
+
+        const update = {
+            $pull: { likes: userId}
+        }
+
+        const updatedBlog = await Blog.findOneAndUpdate(conditions, update)
+
+        console.log(updatedBlog)
+
+        response.status(200).send();
+    } catch(err) {
+        console.log(err)
         response.status(501).send();
     }
 })
