@@ -8,6 +8,8 @@ const path = require("path");
 const Sequelize = require('sequelize');
 const { ValidationError } = require('sequelize');
 const Op = Sequelize.Op;
+const nodemailer = require('nodemailer');
+const { MAIL_ID, MAIL_PASSWORD } = require('../utils/config')
 
 const AddUser = (body, next) => {
     let { passwordUser, username, email } = body;
@@ -255,6 +257,37 @@ const follow = async (req, res) => {
     }   
 }
 
+const Handleforgotpass = async (req, res) => {
+    console.log(req.body.username)
+    const user = await User.findOne({
+        where: {
+            Username : req.body.username
+        },
+        attributes: ['ProfileId']
+    });
+    const profile = await Profile.findOne({
+        where: {
+            Id : parseInt(user.ProfileId.toString())
+        },
+        attributes: ['Email']
+    })
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: MAIL_ID.toString(),
+            pass: MAIL_PASSWORD.toString()
+        }
+    })
+    let info = await transporter.sendMail({
+        from : MAIL_ID.toString(),
+        to : profile.Email.toString(),
+        subject : "Reset Password link",
+        text : "Trial"
+    })
+    console.log(info.messageId);
+    res.status(200).send();
+}
+
 module.exports = {
     AddUser,
     AuthUser,
@@ -265,5 +298,6 @@ module.exports = {
     updateProfile,
     AddAnnoUser,
     instantiateUser,
-    follow
+    follow,
+    Handleforgotpass
 }

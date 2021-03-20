@@ -1,5 +1,5 @@
 const connectRouter = require('express').Router()
-const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard, updateProfile, AddAnnoUser, follow } = require('../services/connectServices');
+const { AddUser,AuthUser, RetreiveInfo, search, Updaterespect, leaderboard, updateProfile, AddAnnoUser, follow, Handleforgotpass } = require('../services/connectServices');
 const  { authenticateToken } = require('../utils/middleware');
 const jwt = require('jsonwebtoken');
 const { ACCESS_TOKEN_SECRET } = require('../utils/config'); 
@@ -164,6 +164,10 @@ connectRouter.post('/createAnnoUser', authenticateToken, async(request, response
 		next(e);
 	}
 });
+
+connectRouter.post('/forgotpass',async(request, response) => {
+    Handleforgotpass(request,response);
+})
 
 connectRouter.post('/follow',authenticateToken, async(req, res) => {
     console.log(req.body)

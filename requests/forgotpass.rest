@@ -1,0 +1,6 @@
+POST http://localhost:3001/connect/forgotpass
+Content-Type: application/json
+
+{
+    "username": "mailsender"
+}
