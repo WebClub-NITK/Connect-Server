@@ -1,7 +1,8 @@
 const Blog = require('../models/blog')
+const { Updaterespect } = require('./connectServices')
 
 const getAllBlogs = async (numberOfPosts) => {
-    const blogs = await Blog.find({}).skip(numberOfPosts).limit(10);
+    const blogs = await Blog.find({}).skip(numberOfPosts).limit(10).lean();
     return blogs
 }
 
@@ -27,7 +28,7 @@ const getBlogsByTags = async (tag, numberOfPosts) => {
     });
     const blogs = await Blog.find({
         tags: { $regex: `.*${tag}.*`, $options: "i" },
-    }).skip(numberOfPosts).limit(10);
+    }).skip(numberOfPosts).limit(10).lean();
     return {blogs:blogs, count: count};
 }
 
@@ -39,6 +40,7 @@ const insertBlog = async (userId, body) => {
         tags: body.tags,
         coverImageUrl: body.coverImageUrl
     })
+    Updaterespect(userId, 10)
     return blog.save()
 }
 

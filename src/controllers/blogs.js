@@ -11,6 +11,9 @@ const {
     insertBlog,
     updateBlog,
 } = require("../services/blogServices");
+
+const { Updaterespect, search } = require('../services/connectServices')
+
 const Blog = require("../models/blog");
 
 const { authenticateToken } = require("../utils/middleware");
@@ -109,10 +112,16 @@ blogsRouter.get("/search/:pageNumber", async (request, response) => {
 blogsRouter.get("/:id", async (request, response) => {
     try {
         const id = request.params.id;
-        const blog = await Blog.findById(id);
+        let blog = await Blog.findById(id);
         blog.views += 1
         blog.save()
+        blog = blog.toJSON();
         if (blog) {
+            if(blog.author_id){
+                const user = await search({id: blog.author_id})
+                blog.author_name = user.Profile.Name
+                blog.author_username = user.Username
+            }
             response.status(201).json(blog);
         } else {
             response.status(404).send();
@@ -227,6 +236,7 @@ blogsRouter.put('/:id/like', authenticateToken, async (request, response) => {
         const updatedBlog = await Blog.findOneAndUpdate(conditions, update)
 
         console.log(updatedBlog)
+        Updaterespect(updatedBlog.author_id, 1)
 
         response.status(200).send();
     } catch(err) {
