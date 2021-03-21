@@ -10,6 +10,7 @@ const {
     getBlogsByTags,
     insertBlog,
     updateBlog,
+    getUserBlogs
 } = require("../services/blogServices");
 
 const { Updaterespect, search } = require('../services/connectServices')
@@ -56,7 +57,8 @@ blogsRouter.post("/", authenticateToken, async (request, response) => {
     try {
         const body = request.body;
         const user = request.user;
-
+        
+        console.log(user.Id);
         const savedBlog = await insertBlog(user.Id, body);
 
         response.status(200).json(savedBlog);
@@ -265,6 +267,18 @@ blogsRouter.put('/:id/unlike', authenticateToken, async (request, response) => {
         console.log(err)
         response.status(501).send();
     }
+})
+
+blogsRouter.get('/profile/:userId', async (request, response) => {
+     try{
+       const userId = request.params.userId;
+       const userBlogs = await getUserBlogs(userId);
+
+       response.status(200).json(userBlogs);
+     }catch(e){
+        console.log(e);
+        response.status(501).send();
+     }
 })
 
 module.exports = blogsRouter;
