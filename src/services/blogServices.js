@@ -55,10 +55,16 @@ const updateBlog = async (userId, id, body) => {
     return updatedBlog
 }
 
+const getUserBlogs = async (userId) => {
+    const userBlogs = await Blog.find({author_id:userId});
+    return userBlogs;
+}
+
 module.exports = {
     getAllBlogs,
     getSearchBlogs,
     getBlogsByTags,
     insertBlog,
     updateBlog,
+    getUserBlogs
 }
