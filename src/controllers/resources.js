@@ -11,6 +11,7 @@ const Branch = require('../models/resource-module/branch')
 const Course = require('../models/resource-module/course')
 const Resource = require('../models/resource-module/resource')
 const Feedback  = require('../models/resource-module/feedback')
+const CourseComment = require('../models/resource-module/courseComment')
 resourcesRouter.get('/resources', (request, response) => {
 
     Resource.find().then(resources=>{
@@ -79,6 +80,46 @@ resourcesRouter.get('/course/:id', (request, response) => {
     })
     .catch((err) => {
         console.log(err)
+    })
+})
+
+resourcesRouter.get('/course/:id/comments', (request, response) => {
+    CourseComment.find({course:ObjectId(request.params.id)}).then(comments=>{
+        response.json({comments:comments})
+    }).catch(err=>{
+        console.log(err)
+    })
+})
+
+resourcesRouter.post('/course/:id/comments', (request, response) => {
+    const comment = new CourseComment({
+        text: request.body.comment,
+        replies: [],
+        likes: 0,
+        dislikes: 0,
+        course: ObjectId(request.params.id)
+    })
+
+    comment.save()
+    .then(() => {
+        response.json({message: "Comment added"})
+    })
+    .catch((err) => {
+        console.log(err)
+    })
+})
+
+resourcesRouter.put('/course/comments/:id', (request, response) => {
+    CourseComment.findByIdAndUpdate(request.params.id, {
+        $push: {replies: request.body.reply}
+    }, {
+        new: true
+    })
+    .then(() => {
+        return response.json({message: "reply added"})
+    })
+    .catch((err) => {
+        return console.log(err)
     })
 })
 

@@ -3,9 +3,10 @@ const express = require('express')
 const path = require('path')
 const app = express()
 const cors = require('cors')
+const url = require('url')
 
 // function imports
-const { requestLogger, unknownEndpoint } = require('./utils/middleware')
+const { requestLogger, unknownEndpoint, errorHandler } = require('./utils/middleware')
 const blogsRouter = require('./controllers/blogs')
 const connectRouter = require('./controllers/connect')
 const resourcesRouter = require('./controllers/resources')
@@ -25,6 +26,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger)
 
+app.get('/', (request, response) => {
+    response.json({message: "Welcome to connect server 🔥"})
+})
+
 // blogs route handler
 app.use('/blogs', blogsRouter)
 
@@ -36,5 +41,8 @@ app.use('/resource_module', resourcesRouter)
 
 // handles unknown endpoints
 app.use(unknownEndpoint)
+
+// Handle internal server errors which are not caught
+app.use(errorHandler);
 
 module.exports = app

@@ -15,9 +15,11 @@ Create a .env file in the root with following contents.
 ```
 PORT=(3001)
 MONGODB_URI=(mongo db instance url)
+DB_HOST=(host url where mysql is deployed, 'localhost' if running locally)
 DB_USER='<mysql_username>'
 DB_PASSWORD'<mysql_userpassword'>
 DATABASE='Connect'
+DB_PORT=(mysql port, default 3306)
 ACCESS_TOKEN_SECRET='<64 byte random string>'
 ```
 ### MySQL Configure
@@ -46,6 +48,30 @@ const User = UserModel(sequelize, Sequelize.DataTypes);
 ### Run
 To start the server: `npm start`  
 To run in development environment: `npm run dev`
+
+---
+
+## Deployments
+
+### Using Heroku
+
+1. Install Heroku cli and login
+2. Run `heroku create`
+3. Push the branch you want to deploy to heroku `git push heroku <branch>:main`
+
+### Using Docker Container
+
+1. Set all the environment variables from the configure section above, either in the Dockerfile (not recommended) or in the docker run command.
+2. Build the image.
+3. You have to create volume or bind mounts for every folder that needs to persisted across restarts (blog_images and profiles folder as of now)
+4. Map port, volume mount, env variables, and then run the container.
+```
+docker run -p 3000:8080 -v volume_mount:/app/blog_images <docker_image>
+```
+#### For development bind mounts is prefered.
+```
+docker run -p 3000:8080 --mount type=bind,source="$(pwd)"/blog_images,target=/app/blog_images <docker_image>
+```
 
 ---
 
