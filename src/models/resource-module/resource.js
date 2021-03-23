@@ -16,6 +16,16 @@ const resourceSchema = new mongoose.Schema({
     course:{
         type:ObjectId,
         ref: "Course"
+    },
+    user:{
+        Id: {
+            type: String,
+            required:true
+        },
+        Username:{
+            type: String,
+            required:true
+        }
     }
 
 });

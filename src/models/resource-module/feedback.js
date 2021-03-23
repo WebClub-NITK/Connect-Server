@@ -6,13 +6,20 @@ upvoteSchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'Resources'
     },
-    // user:{
-    //     type: ObjectId,
-    //     ref: 'User'
-    // },
     positive:{
         type:Boolean, 
+    },
+    user:{
+        Id: {
+            type: String,
+            required:true
+        },
+        Username:{
+            type: String,
+            required:true
+        }
     }
+
 })
 
 module.exports= mongoose.model('Feedback',upvoteSchema)
