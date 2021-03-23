@@ -97,7 +97,11 @@ resourcesRouter.post('/course/:id/comments', (request, response) => {
         replies: [],
         likes: 0,
         dislikes: 0,
-        course: ObjectId(request.params.id)
+        course: ObjectId(request.params.id),
+        user:{
+            Id: request.user.Id,
+            Username: request.user.name
+        }, 
     })
 
     comment.save()
@@ -173,7 +177,11 @@ resourcesRouter.post('/resources/:course_id', upload.array('file'),async (req,re
         title: req.body.title,
         description: req.body.description,
         // tags:tags,
-        course: ObjectId(req.params.course_id)
+        course: ObjectId(req.params.course_id),
+        user:{
+            Id: req.user.Id,
+            Username: req.user.Username
+        }
     });
     
     req.files.forEach(file=>{
@@ -216,6 +224,10 @@ resourcesRouter.get('/resource/:resource_id/like', async (req,res)=>{
          feedback  = new Feedback({
              resource:ObjectId(req.params.resource_id),
              positive:true,
+             user:{
+                 Id: req.user.Id,
+                 Username: req.user.Username
+             }
             //  user:ObjectId(req.user.id)
          });
          await feedback.save();                    
@@ -225,6 +237,10 @@ resourcesRouter.get('/resource/:resource_id/like', async (req,res)=>{
     res.json({status:status,
          likes:likes,
           dislikes: dislikes,
+          user:{
+            Id: req.user.Id,
+            Username: req.user.Username
+        }
         //   user:req.user
     });
 
@@ -246,6 +262,10 @@ resourcesRouter.get('/resource/:resource_id/dislike', async (req,res)=>{
          feedback  = new Feedback({
              resource:ObjectId(req.params.resource_id),
              positive:false,
+             user:{
+                Id: req.user.Id,
+                Username: req.user.Username
+            }
             //  user:ObjectId(req.user.id)
          });
          await feedback.save();                    
