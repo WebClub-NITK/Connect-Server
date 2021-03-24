@@ -17,6 +17,16 @@ const courseCommentSchema = new mongoose.Schema({
             dislikes: {
                 type: Number,
                 min: 0,
+            },
+            user: {
+                Id: {
+                    type: String,
+                    required:true
+                },
+                Username:{
+                    type: String,
+                    required:true
+                }
             }
         }
     ],

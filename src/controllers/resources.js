@@ -12,6 +12,8 @@ const Course = require('../models/resource-module/course')
 const Resource = require('../models/resource-module/resource')
 const Feedback  = require('../models/resource-module/feedback')
 const CourseComment = require('../models/resource-module/courseComment')
+const { authenticateToken } = require('../utils/middleware')
+
 resourcesRouter.get('/resources', (request, response) => {
 
     Resource.find().then(resources=>{
@@ -91,7 +93,7 @@ resourcesRouter.get('/course/:id/comments', (request, response) => {
     })
 })
 
-resourcesRouter.post('/course/:id/comments', (request, response) => {
+resourcesRouter.post('/course/:id/comments', authenticateToken, (request, response) => {
     const comment = new CourseComment({
         text: request.body.comment,
         replies: [],
@@ -100,7 +102,7 @@ resourcesRouter.post('/course/:id/comments', (request, response) => {
         course: ObjectId(request.params.id),
         user:{
             Id: request.user.Id,
-            Username: request.user.name
+            Username: request.user.Username
         }, 
     })
 
@@ -113,9 +115,17 @@ resourcesRouter.post('/course/:id/comments', (request, response) => {
         })
 })
 
-resourcesRouter.put('/course/comments/:id', (request, response) => {
+resourcesRouter.put('/course/comments/:id', authenticateToken, (request, response) => {
     CourseComment.findByIdAndUpdate(request.params.id, {
-        $push: {replies: request.body.reply}
+        $push: {replies: {
+            text: request.body.reply,
+            likes: 0,
+            dislikes: 0,
+            user:{
+                Id: request.user.Id,
+                Username: request.user.Username
+            }
+        }}
     }, {
         new: true
     })
@@ -167,7 +177,7 @@ resourcesRouter.get('/resources/:course_id', (request, response) => {
     })
 })
 
-resourcesRouter.post('/resources/:course_id', upload.array('file'),async (req,res)=>{
+resourcesRouter.post('/resources/:course_id', authenticateToken, upload.array('file'),async (req,res)=>{
     // let tags = req.body.tags.split(' ')
     // tags.forEach(t => {
     //     t=t.toUpperCase()
