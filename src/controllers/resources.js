@@ -17,29 +17,29 @@ resourcesRouter.get('/resources', (request, response) => {
     Resource.find().then(resources=>{
         response.json({resources:resources});
     })
-    .catch(err=>{
-        console.log(err);
-    })
+        .catch(err=>{
+            console.log(err);
+        })
 })
 
 resourcesRouter.get('/branches', (request, response) => {
     Branch.find()
-    .then((branches) => {
-        response.json({branches: branches})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((branches) => {
+            response.json({branches: branches})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.get('/branch/:id', (request, response) => {
     Branch.findById(request.params.id)
-    .then((branch) => {
-        response.json({branch: branch})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((branch) => {
+            response.json({branch: branch})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.post('/branches', (request, response) => {
@@ -55,32 +55,32 @@ resourcesRouter.post('/branches', (request, response) => {
     })
 
     branch.save()
-    .then((branch) => {
-        response.json({message: "Branch Saved Successfully"})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((branch) => {
+            response.json({message: "Branch Saved Successfully"})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.get('/courses', (request, response) => {
     Course.find()
-    .then((courses) => {
-        response.json({courses: courses})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((courses) => {
+            response.json({courses: courses})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.get('/course/:id', (request, response) => {
     Course.findById(request.params.id)
-    .then((course) => {
-        response.json({course: course})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((course) => {
+            response.json({course: course})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.get('/course/:id/comments', (request, response) => {
@@ -105,12 +105,12 @@ resourcesRouter.post('/course/:id/comments', (request, response) => {
     })
 
     comment.save()
-    .then(() => {
-        response.json({message: "Comment added"})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then(() => {
+            response.json({message: "Comment added"})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.put('/course/comments/:id', (request, response) => {
@@ -119,12 +119,12 @@ resourcesRouter.put('/course/comments/:id', (request, response) => {
     }, {
         new: true
     })
-    .then(() => {
-        return response.json({message: "reply added"})
-    })
-    .catch((err) => {
-        return console.log(err)
-    })
+        .then(() => {
+            return response.json({message: "reply added"})
+        })
+        .catch((err) => {
+            return console.log(err)
+        })
 })
 
 resourcesRouter.post('/courses', (request, response) => {
@@ -141,22 +141,22 @@ resourcesRouter.post('/courses', (request, response) => {
     })
 
     course.save()
-    .then((course) => {
-        response.json({message: "Course Saved Successfully"})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((course) => {
+            response.json({message: "Course Saved Successfully"})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.get('/courses/:branch_id', (request, response) => {
     Course.find({branch: ObjectId(request.params.branch_id)})
-    .then((courses) => {
-        response.json({courses: courses})
-    })
-    .catch((err) => {
-        console.log(err)
-    })
+        .then((courses) => {
+            response.json({courses: courses})
+        })
+        .catch((err) => {
+            console.log(err)
+        })
 })
 
 resourcesRouter.get('/resources/:course_id', (request, response) => {
@@ -211,33 +211,33 @@ resourcesRouter.get('/resource/:resource_id/like', async (req,res)=>{
     // let feedback = await Feedback.findOne({user:req.user.id})
     let status = "Liked";
     if(feedback && feedback.positive == true)
-        {
-         feedback =  await Feedback.findByIdAndDelete(feedback.id);
-         status= "Unliked"   
-        }
+    {
+        feedback =  await Feedback.findByIdAndDelete(feedback.id);
+        status= "Unliked"   
+    }
     else if(feedback && feedback.positive == false )
-        {
-            feedback.positive= true;
-            await feedback.save();   
-        }
+    {
+        feedback.positive= true;
+        await feedback.save();   
+    }
     else {
-         feedback  = new Feedback({
-             resource:ObjectId(req.params.resource_id),
-             positive:true,
-             user:{
-                 Id: req.user.Id,
-                 Username: req.user.Username
-             }
-            //  user:ObjectId(req.user.id)
-         });
-         await feedback.save();                    
+        feedback  = new Feedback({
+            resource:ObjectId(req.params.resource_id),
+            positive:true,
+            user:{
+                Id: req.user.Id,
+                Username: req.user.Username
+            }
+        //  user:ObjectId(req.user.id)
+        });
+        await feedback.save();                    
     }
     let likes = await Feedback.find({positive: true});
     let dislikes = await Feedback.find({positive: false});
     res.json({status:status,
-         likes:likes,
-          dislikes: dislikes,
-          user:{
+        likes:likes,
+        dislikes: dislikes,
+        user:{
             Id: req.user.Id,
             Username: req.user.Username
         }
@@ -249,32 +249,32 @@ resourcesRouter.get('/resource/:resource_id/dislike', async (req,res)=>{
     // let feedback = await Feedback.findOne({user:req.user.id})
     let status = "Disliked";
     if(feedback && feedback.positive ==false)
-        {
-         feedback =  await Feedback.findByIdAndDelete(feedback.id);
-         status= "Removed disliked"   
-        }
+    {
+        feedback =  await Feedback.findByIdAndDelete(feedback.id);
+        status= "Removed disliked"   
+    }
     else if(feedback && feedback.positive == true )
-        {
-            feedback.positive= false;
-            await feedback.save();   
-        }
+    {
+        feedback.positive= false;
+        await feedback.save();   
+    }
     else {
-         feedback  = new Feedback({
-             resource:ObjectId(req.params.resource_id),
-             positive:false,
-             user:{
+        feedback  = new Feedback({
+            resource:ObjectId(req.params.resource_id),
+            positive:false,
+            user:{
                 Id: req.user.Id,
                 Username: req.user.Username
             }
-            //  user:ObjectId(req.user.id)
-         });
-         await feedback.save();                    
+        //  user:ObjectId(req.user.id)
+        });
+        await feedback.save();                    
     }
     let likes = await Feedback.find({positive: true});
     let dislikes = await Feedback.find({positive: false});
     res.json({status:status,
-         likes:likes,
-          dislikes: dislikes,
+        likes:likes,
+        dislikes: dislikes,
         //   user:req.user
     });
 
