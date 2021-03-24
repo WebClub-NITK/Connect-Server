@@ -310,6 +310,24 @@ const Updatepass = async(req, response) => {
         );
         response.status(200).send()
     })   
+// this function takes in an array of userids and returns their details.
+const getUsers = async (arr) => {
+
+    const response = await User.findAll({
+        attributes: ['Id', 'Username'],
+        raw: true,
+        where: {
+            Id: {
+                [Op.or]: arr
+            }
+        },
+        include: [
+            { model : Profile, attributes: ['Name']}
+        ],
+    })
+
+    return response
+
 }
 
 module.exports = {
@@ -324,5 +342,6 @@ module.exports = {
     instantiateUser,
     follow,
     Handleforgotpass,
-    Updatepass
+    Updatepass,
+    getUsers
 }
