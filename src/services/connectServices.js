@@ -309,7 +309,8 @@ const Updatepass = async(req, response) => {
             }
         );
         response.status(200).send()
-    })   
+    })  
+} 
 // this function takes in an array of userids and returns their details.
 const getUsers = async (arr) => {
 
