@@ -2,8 +2,8 @@ POST http://localhost:3001/connect/login
 Content-Type: application/json
 
 {
-    "password": "naman234",
-    "username": "naman"
+    "password": "naman123",
+    "username": "mailsender"
 }
 
 ###

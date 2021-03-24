@@ -258,12 +258,11 @@ const follow = async (req, res) => {
 }
 
 const Handleforgotpass = async (req, res) => {
-    console.log(req.body.username)
     const user = await User.findOne({
         where: {
             Username : req.body.username
         },
-        attributes: ['ProfileId']
+        attributes: ['ProfileId','Id']
     });
     const profile = await Profile.findOne({
         where: {
@@ -278,14 +277,39 @@ const Handleforgotpass = async (req, res) => {
             pass: MAIL_PASSWORD.toString()
         }
     })
+    const accessToken = jwt.sign({ userId: user.Id }, ACCESS_TOKEN_SECRET.toString());
     let info = await transporter.sendMail({
         from : MAIL_ID.toString(),
         to : profile.Email.toString(),
         subject : "Reset Password link",
-        text : "Trial"
+        text : `http://localhost:3000/#/connect/updatepass/${accessToken}`
     })
     console.log(info.messageId);
     res.status(200).send();
+}
+
+const Updatepass = async(req, response) => {
+    console.log(req.body.token)
+    jwt.verify(req.body.token.toString(), ACCESS_TOKEN_SECRET.toString(), async(err,res) => {
+        if(err)
+        {
+            console.log(err);
+            response.status(500).send();
+        }
+        let user_id = res.userId.toString();
+        let password = await bcrypt.hash(req.body.password,10)
+        await User.update(
+            {
+                Password: password
+            },
+            {
+                where: {
+                    Id: user_id,
+                }
+            }
+        );
+        response.status(200).send()
+    })   
 }
 
 module.exports = {
@@ -299,5 +323,6 @@ module.exports = {
     AddAnnoUser,
     instantiateUser,
     follow,
-    Handleforgotpass
+    Handleforgotpass,
+    Updatepass
 }
