@@ -19,9 +19,9 @@ const User = UserModel(sequelize, Sequelize.DataTypes);
 const Profile = ProfileModel(sequelize, Sequelize.DataTypes);
 Profile.hasMany(User);
 User.belongsTo(Profile);
-const Follow = FollowModel(sequelize,Sequelize.DataTypes);
-Follow.belongsTo(User,{as:'FollowerId'});
-Follow.belongsTo(User,{as:'FollowingId'});
+const Follow = FollowModel(sequelize, Sequelize.DataTypes);
+Follow.belongsTo(User,{as: 'FollowerId'});
+Follow.belongsTo(User,{as: 'FollowingId'});
 (async () => {
     await sequelize.sync();
     console.log('== Database synchronised! ====');
