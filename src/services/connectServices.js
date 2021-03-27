@@ -61,6 +61,7 @@ const AddAnnoUser = (request, next) => {
                 Username: username,
                 Password: passwordUser
             });
+            await profile.update({AnnouserSet: true});
             return user;
         } catch (e) {
             console.log(e);
@@ -82,6 +83,9 @@ const AuthUser = (body, response, next) => {
                 where: {
                     Username: username
                 },
+                include: [{
+                    model: Profile
+                }],
             });
             if (!user) {
                 return response.status(401).send('Invalid login credentials');
@@ -89,7 +93,7 @@ const AuthUser = (body, response, next) => {
             const auth = await bcrypt.compare(password.toString(), user.Password.toString());
             if (auth) {
                 const accessToken = jwt.sign({ userId: user.Id }, ACCESS_TOKEN_SECRET.toString());
-                return response.status(200).json({ accessToken: accessToken, userId: user.Id });
+                return response.status(200).json({ accessToken: accessToken, userId: user.Id, username: user.Username, anonymous: user.Profile ? true : false });
             } else {
                 return response.status(401).send('Invalid login credentials');
             }
@@ -309,8 +313,8 @@ const Updatepass = async(req, response) => {
             }
         );
         response.status(200).send()
-    })  
-} 
+    })
+}
 // this function takes in an array of userids and returns their details.
 const getUsers = async (arr) => {
 
