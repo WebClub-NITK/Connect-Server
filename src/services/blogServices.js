@@ -14,7 +14,7 @@ const getSearchBlogs = async (title, numberOfPosts) => {
         ],
     })
         .skip(numberOfPosts)
-        .limit(10);
+        .limit(10).lean();
     const count = await Blog.countDocuments({
         $or: [
             { body: { $regex: `.*${title}.*`, $options: "i" } },
@@ -65,7 +65,7 @@ const updateBlog = async (userId, id, body) => {
 };
 
 const getUserBlogs = async (userId) => {
-    const userBlogs = await Blog.find({ author_id: userId });
+    const userBlogs = await Blog.find({ author_id: userId }).lean();
     return userBlogs;
 };
 
