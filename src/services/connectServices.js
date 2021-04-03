@@ -207,9 +207,9 @@ const updateProfile = async (req, res, next) => {
         await Profile.update(
             {
                 Name: name,
-                ProgrammeType: parseInt(ptype.toString()),
-                Department: parseInt(branch.toString()),
-                Semester: parseInt(semester.toString())
+                ProgrammeType: (ptype ? parseInt(ptype.toString()) : null),
+                Department: (branch ? parseInt(branch.toString()) : null),
+                Semester: (semester ? parseInt(semester.toString()) : null)
             },
             {
                 where: {
