@@ -40,6 +40,18 @@ const imageFilter = function (req, file, cb) {
 
 var upload = multer({ storage: storage, fileFilter: imageFilter });
 
+blogsRouter.get('/bookmarks', authenticateToken, async (request, response) => {
+    try {
+        const userId = request.user.Id
+
+        const bookmarkedBlogs = await Blog.find({'bookmarks': [userId]}).lean()
+        response.json(bookmarkedBlogs)
+    } catch(err) {
+        console.log(err)
+        response.status(501).send();
+    }
+})
+
 blogsRouter.get("/page/:pageNumber", async (request, response) => {
     const pageNumber = request.params.pageNumber;
     const numberOfPosts = (pageNumber-1)*10;
@@ -277,6 +289,46 @@ blogsRouter.get('/profile/:userId', async (request, response) => {
         response.status(200).json(userBlogs);
     }catch(e){
         console.log(e);
+        response.status(501).send();
+    }
+})
+
+blogsRouter.put('/:id/bookmark', authenticateToken, async (request, response) => {
+    try {
+        const userId = request.user.Id
+        const postId = request.params.id
+
+        const conditions = { _id: postId, 'bookmarks': {$ne: userId} }
+
+        const update = {
+            $addToSet: { bookmarks: userId}
+        }
+
+        const updatedBlog = await Blog.findOneAndUpdate(conditions, update)
+
+        response.status(200).send();
+    } catch(err) {
+        console.log(err)
+        response.status(501).send();
+    }
+})
+
+blogsRouter.put('/:id/removebookmark', authenticateToken, async (request, response) => {
+    try {
+        const userId = request.user.Id
+        const postId = request.params.id
+
+        const conditions = { _id: postId, 'bookmarks': {$in: [userId]} }
+
+        const update = {
+            $pull: { bookmarks: userId}
+        }
+
+        const updatedBlog = await Blog.findOneAndUpdate(conditions, update)
+
+        response.status(200).send();
+    } catch(err) {
+        console.log(err)
         response.status(501).send();
     }
 })
