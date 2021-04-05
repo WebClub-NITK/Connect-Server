@@ -10,6 +10,7 @@ const { requestLogger, unknownEndpoint, errorHandler } = require('./utils/middle
 const blogsRouter = require('./controllers/blogs')
 const connectRouter = require('./controllers/connect')
 const resourcesRouter = require('./controllers/resources')
+const commentsRouter = require('./controllers/comments')
 require('./database/mongodb')
 
 // allow cors
@@ -38,6 +39,9 @@ app.use('/connect', connectRouter)
 
 // resources route handler
 app.use('/resource_module', resourcesRouter)
+
+// comments route handler
+app.use('/comments', commentsRouter)
 
 // handles unknown endpoints
 app.use(unknownEndpoint)
