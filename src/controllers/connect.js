@@ -48,7 +48,7 @@ connectRouter.post('/signup', async(request, response, next) => {
         const accessToken = jwt.sign({userId: user.Id}, ACCESS_TOKEN_SECRET.toString());
         console.log(accessToken);
         console.log(jwt.verify(accessToken.toString(), ACCESS_TOKEN_SECRET.toString()));
-        response.status(200).json({accessToken: accessToken, userId: user.Id, username: user.Username, anonymous: user.Profile ? true : false});
+        response.status(200).json({accessToken: accessToken, userId: user.Id, username: user.Username, anonymous: user.ProfileId ? true : false});
     } catch(err) {
         next(err);
     }
