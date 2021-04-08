@@ -13,6 +13,7 @@ const Resource = require('../models/resource-module/resource')
 const Feedback  = require('../models/resource-module/feedback')
 const CourseComment = require('../models/resource-module/courseComment')
 const { authenticateToken } = require('../utils/middleware')
+const { Updaterespect} = require('../services/connectServices')
 
 resourcesRouter.get('/resources', (request, response) => {
 
@@ -137,7 +138,7 @@ resourcesRouter.put('/course/comments/:id', authenticateToken, (request, respons
         })
 })
 
-resourcesRouter.post('/courses', (request, response) => {
+resourcesRouter.post('/courses', authenticateToken, (request, response) => {
     const {code, name, branch} = request.body
 
     if(!code || !name || !branch) {
@@ -204,6 +205,8 @@ resourcesRouter.post('/resources/:course_id', authenticateToken, upload.array('f
     }).catch(err=>{
         console.log(err);
     })
+    // console.log(req.user.Id)
+    Updaterespect(req.user.Id, 10)
 
 })
 
