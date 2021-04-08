@@ -26,9 +26,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger)
 
-app.get('/', (request, response) => {
-    response.json({message: "Welcome to connect server 🔥"})
-})
+// app.get('/', (request, response) => {
+//     response.json({message: "Welcome to connect server 🔥"})
+// })
 
 // blogs route handler
 app.use('/blogs', blogsRouter)
