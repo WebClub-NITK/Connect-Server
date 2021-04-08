@@ -133,7 +133,7 @@ blogsRouter.get("/:id", async (request, response) => {
         if (blog) {
             if(blog.author_id){
                 const user = await search({id: blog.author_id})
-                blog.author_name = user.Profile.Name
+                blog.author_name = user.Profile ? user.Profile.Name : null
                 blog.author_username = user.Username
             }
             response.status(201).json(blog);
