@@ -1,6 +1,7 @@
 const http = require('http')
 const app = require('./app')
 const { PORT } = require('./utils/config')
+require('../populate')
 
 const server = http.createServer(app)
 

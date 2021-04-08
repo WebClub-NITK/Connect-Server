@@ -270,15 +270,15 @@ blogsRouter.put('/:id/unlike', authenticateToken, async (request, response) => {
 })
 
 blogsRouter.get('/profile/:userId', async (request, response) => {
-     try{
-       const userId = request.params.userId;
-       const userBlogs = await getUserBlogs(userId);
+    try{
+        const userId = request.params.userId;
+        const userBlogs = await getUserBlogs(userId);
 
-       response.status(200).json(userBlogs);
-     }catch(e){
+        response.status(200).json(userBlogs);
+    }catch(e){
         console.log(e);
         response.status(501).send();
-     }
+    }
 })
 
 module.exports = blogsRouter;
