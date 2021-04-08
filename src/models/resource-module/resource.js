@@ -34,7 +34,8 @@ const resourceSchema = new mongoose.Schema({
             type: String,
             required:true
         }
-    }
+    },
+    links:[String]
 
 });
 

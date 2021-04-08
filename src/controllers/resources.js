@@ -198,7 +198,12 @@ resourcesRouter.post('/resources/:course_id', authenticateToken, upload.array('f
     req.files.forEach(file=>{
         newResource.files.push(file.id);
     })
-    
+
+    if(req.body.links)
+    {
+        links = req.body.links.split(' ');
+        newResource.links = links;
+    }
     newResource.save().then(r=>{
         console.log(r);
         res.json({message:"Resource added successfully"});
