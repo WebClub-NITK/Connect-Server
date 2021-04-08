@@ -29,6 +29,9 @@ const blogSchema = new mongoose.Schema({
     },
     likes: [{
         type: String
+    }],
+    bookmarks: [{
+        type: String
     }]
 }, { timestamps: true })
 
