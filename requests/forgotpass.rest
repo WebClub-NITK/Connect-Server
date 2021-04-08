@@ -1,0 +1,15 @@
+POST http://localhost:3001/connect/forgotpass
+Content-Type: application/json
+
+{
+    "username": "mailsender"
+}
+
+###
+POST http://localhost:3001/connect/updatepass
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTYxNjU2NzM0OH0.m7OifHKjeii7-842_fOG9bOr4ItGjgeanaq96j0LvRk",
+    "password": "naman124"
+}

@@ -21,7 +21,10 @@ DB_PASSWORD'<mysql_userpassword'>
 DATABASE='Connect'
 DB_PORT=(mysql port, default 3306)
 ACCESS_TOKEN_SECRET='<64 byte random string>'
+MAIL_ID="<Your mailid>"
+MAIL_PASSWORD="<Password>"
 ```
+* You will have to [reduce the security bounds](https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4OMHOjPSpguuqWUUR5ZySVa8sC0iDhi1BtHge7ctVv9FwxZ9h4UbCC7GkHJQ6M-55Yj04E-zeCfNvMuVjVIIM2o538I5Q) of the mailid you choose
 ### MySQL Configure
 Install MySQL then enter the MYSQL console by  ```sudo mysql``` <br/>
 Run the following commands

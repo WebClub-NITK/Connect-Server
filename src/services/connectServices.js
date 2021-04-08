@@ -8,6 +8,8 @@ const path = require("path");
 const Sequelize = require('sequelize');
 const { ValidationError } = require('sequelize');
 const Op = Sequelize.Op;
+const nodemailer = require('nodemailer');
+const { MAIL_ID, MAIL_PASSWORD } = require('../utils/config')
 
 const AddUser = (body, next) => {
     let { passwordUser, username, email } = body;
@@ -59,6 +61,7 @@ const AddAnnoUser = (request, next) => {
                 Username: username,
                 Password: passwordUser
             });
+            await profile.update({AnnouserSet: true});
             return user;
         } catch (e) {
             console.log(e);
@@ -80,6 +83,9 @@ const AuthUser = (body, response, next) => {
                 where: {
                     Username: username
                 },
+                include: [{
+                    model: Profile
+                }],
             });
             if (!user) {
                 return response.status(401).send('Invalid login credentials');
@@ -87,7 +93,7 @@ const AuthUser = (body, response, next) => {
             const auth = await bcrypt.compare(password.toString(), user.Password.toString());
             if (auth) {
                 const accessToken = jwt.sign({ userId: user.Id }, ACCESS_TOKEN_SECRET.toString());
-                return response.status(200).json({ accessToken: accessToken, userId: user.Id });
+                return response.status(200).json({ accessToken: accessToken, userId: user.Id, username: user.Username, anonymous: user.Profile ? true : false });
             } else {
                 return response.status(401).send('Invalid login credentials');
             }
@@ -201,9 +207,9 @@ const updateProfile = async (req, res, next) => {
         await Profile.update(
             {
                 Name: name,
-                ProgrammeType: parseInt(ptype.toString()),
-                Department: parseInt(branch.toString()),
-                Semester: parseInt(semester.toString())
+                ProgrammeType: (ptype ? parseInt(ptype.toString()) : null),
+                Department: (branch ? parseInt(branch.toString()) : null),
+                Semester: (semester ? parseInt(semester.toString()) : null)
             },
             {
                 where: {
@@ -255,6 +261,60 @@ const follow = async (req, res) => {
     }   
 }
 
+const Handleforgotpass = async (req, res) => {
+    const user = await User.findOne({
+        where: {
+            Username : req.body.username
+        },
+        attributes: ['ProfileId','Id']
+    });
+    const profile = await Profile.findOne({
+        where: {
+            Id : parseInt(user.ProfileId.toString())
+        },
+        attributes: ['Email']
+    })
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: MAIL_ID.toString(),
+            pass: MAIL_PASSWORD.toString()
+        }
+    })
+    const accessToken = jwt.sign({ userId: user.Id }, ACCESS_TOKEN_SECRET.toString());
+    let info = await transporter.sendMail({
+        from : MAIL_ID.toString(),
+        to : profile.Email.toString(),
+        subject : "Reset Password link",
+        text : `http://localhost:3000/#/connect/updatepass/${accessToken}`
+    })
+    console.log(info.messageId);
+    res.status(200).send();
+}
+
+const Updatepass = async(req, response) => {
+    console.log(req.body.token)
+    jwt.verify(req.body.token.toString(), ACCESS_TOKEN_SECRET.toString(), async(err,res) => {
+        if(err)
+        {
+            console.log(err);
+            response.status(500).send();
+        }
+        let user_id = res.userId.toString();
+        let password = await bcrypt.hash(req.body.password,10)
+        await User.update(
+            {
+                Password: password
+            },
+            {
+                where: {
+                    Id: user_id,
+                }
+            }
+        );
+        response.status(200).send()
+    })
+}
 // this function takes in an array of userids and returns their details.
 const getUsers = async (arr) => {
 
@@ -286,5 +346,7 @@ module.exports = {
     AddAnnoUser,
     instantiateUser,
     follow,
-    getUsers,
+    Handleforgotpass,
+    Updatepass,
+    getUsers
 }
