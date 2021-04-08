@@ -94,11 +94,11 @@ blogsRouter.put("/:id", authenticateToken, async (request, response) => {
     }
 });
 
-blogsRouter.delete("/:id", async (request, response) => {
+blogsRouter.delete("/:id", authenticateToken, async (request, response) => {
     try {
         const id = request.params.id;
-        await Blog.deleteOne({ _id: id });
-        response.status(204).json();
+        await Blog.deleteOne({ _id: id, author_id: request.user.Id });
+        response.status(204).send()
     } catch (err) {
         console.log(err.message);
         response.status(400).json({ error: error.message });
