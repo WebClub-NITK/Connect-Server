@@ -1,4 +1,8 @@
-const { DB_USER, DB_PASSWORD, DATABASE } = require("../src/utils/config");
+require('dotenv').config()
+
+const DB_USER = process.env.DB_USER
+const DB_PASSWORD = process.env.DB_PASSWORD
+const DATABASE = process.env.DATABASE
 
 module.exports = {
     development: {
