@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     //Users Table
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("User", {
         Id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -33,7 +33,7 @@ module.exports = {
     });
 
     //Profiles Table
-    await queryInterface.createTable("Profiles", {
+    await queryInterface.createTable("Profile", {
         Id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -70,7 +70,7 @@ module.exports = {
     });
 
     //Follows Table
-    await queryInterface.createTable("Follows", {
+    await queryInterface.createTable("Follow", {
         Id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
