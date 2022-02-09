@@ -24,7 +24,15 @@ module.exports = (sequelize, DataTypes) => {
         AnnouserSet: {
             type: DataTypes.BOOLEAN,
             default: false
-        }
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
+        updatedAt: {
+            allowNull: false,
+            type: DataTypes.DATE,
+        },
     });
     return Profile;
 };

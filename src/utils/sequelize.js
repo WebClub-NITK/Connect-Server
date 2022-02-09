@@ -1,32 +1,35 @@
-const Sequelize = require("sequelize");
+/* eslint-disable one-var */
+require("dotenv").config();
+
+const {Sequelize, DataTypes} = require("sequelize");
 const { DB_HOST, USER, PASSWORD, DATABASE } = require('./config');
-const UserModel = require('../models/User');
-const ProfileModel = require('../models/Profile');
-const FollowModel = require('../models/Follow');
 const sequelize = new Sequelize(DATABASE, USER, PASSWORD, {
     host: DB_HOST,
     dialect: 'mysql'
 });
+
+User = require("../models/User")(sequelize, DataTypes),
+Profile = require("../models/Profile")(sequelize, DataTypes),
+Follow = require("../models/Follow")(sequelize, DataTypes);
+
 (async () => {
     try {
         await sequelize.authenticate();
-        console.log('Connected successfully!');
+        console.log('Sequelize: Connected successfully!');
     } catch (error) {
-        console.log('Error: ', error)
+        console.log('Sequelize: Error: ', error)
     }
 })();
-const User = UserModel(sequelize, Sequelize.DataTypes);
-const Profile = ProfileModel(sequelize, Sequelize.DataTypes);
+
+//Associations
 Profile.hasMany(User);
 User.belongsTo(Profile);
-const Follow = FollowModel(sequelize, Sequelize.DataTypes);
+
 Follow.belongsTo(User,{as: 'FollowerId'});
 Follow.belongsTo(User,{as: 'FollowingId'});
-(async () => {
-    await sequelize.sync();
-    console.log('== Database synchronised! ====');
-})();
+
 module.exports = {
+    sequelize,
     User,
     Profile,
     Follow
